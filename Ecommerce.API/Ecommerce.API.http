@@ -1,0 +1,17 @@
+﻿@Ecommerce.API_HostAddress = http://localhost:5259
+
+GET {{Ecommerce.API_HostAddress}}/api/v1/ecommerce/products
+Accept: application/json
+
+###
+
+POST {{Ecommerce.API_HostAddress}}/api/v1/ecommerce/products
+Content-Type: application/json
+
+    {
+  "name": "Yến Sào Tinh Chế 100g",
+  "description": "Yến sào nguyên chất đã làm sạch",
+}
+
+
+###
