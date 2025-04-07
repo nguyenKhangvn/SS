@@ -17,7 +17,7 @@ namespace Ecommerce.API.Apis
                 var category = await repo.GetCategoryById(categoryId, includeProperties);
                 return category is not null ? Results.Ok(category) : Results.NotFound();
             });
-
+            // test dev
             return builder;
         }
     }
