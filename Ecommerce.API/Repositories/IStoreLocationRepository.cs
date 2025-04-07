@@ -2,7 +2,7 @@
 {
     public interface IStoreLocationRepository
     {
-        IQueryable<StoreLocation> GetAll();
+        Task<IEnumerable<StoreLocation>> GetStoreLocationsAsync(string? includeProperties = null);
         Task<StoreLocation?> GetByIdAsync(Guid id, string? includeProperties = null);
         Task<StoreLocation> AddAsync(StoreLocation storeLocation);
         Task<StoreLocation> UpdateAsync(StoreLocation storeLocation);

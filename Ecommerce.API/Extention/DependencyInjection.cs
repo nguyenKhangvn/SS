@@ -19,6 +19,9 @@ namespace Ecommerce.API.Extention
             // store location
             services.AddScoped<IStoreLocationRepository, StoreLocationRepository>();
             services.AddScoped<IStoreLocationService, StoreLocationService>();
+            // Post
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IPostService, PostService>();
             return services;
         }
     }

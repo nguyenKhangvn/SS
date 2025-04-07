@@ -13,11 +13,6 @@ namespace Ecommerce.API.Services
             _storeLocationRepository = storeLocationRepository;
             _mapper = mapper;
         }
-        public IQueryable<StoreLocationDto> GetAll()
-        {
-            var storeLocations = _storeLocationRepository.GetAll();
-            return storeLocations.Select(x => _mapper.Map<StoreLocationDto>(x));
-        }
         public async Task<StoreLocationDto> AddAsync(StoreLocationDto storeLocation)
         {
             var storeLocationEntity = _mapper.Map<StoreLocation>(storeLocation);
@@ -32,6 +27,11 @@ namespace Ecommerce.API.Services
         }
         public async Task<bool> DeleteAsync(Guid id)
         {
+            var storeLocation = await _storeLocationRepository.GetByIdAsync(id);
+            if (storeLocation == null)
+            {
+                return false;
+            }
             return await _storeLocationRepository.DeleteAsync(id);
         }
 
@@ -43,6 +43,12 @@ namespace Ecommerce.API.Services
                 return null;
             }
             return _mapper.Map<StoreLocationDto>(storeLocation);
+        }
+
+        public async Task<IEnumerable<StoreLocationDto>> GetStoreLocations(string? includeProperties = null)
+        {
+            var query = await _storeLocationRepository.GetStoreLocationsAsync(includeProperties);
+            return query.Select(sl => _mapper.Map<StoreLocationDto>(sl));
         }
     }
   
