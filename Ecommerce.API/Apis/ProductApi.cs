@@ -1,7 +1,4 @@
 ﻿
-using Ecommerce.API.Dtos;
-using Ecommerce.API.Interfaces;
-
 namespace Ecommerce.API.Apis
 {
     public static class ProductApi
@@ -17,7 +14,7 @@ namespace Ecommerce.API.Apis
             //    .Produces(StatusCodes.Status400BadRequest)
             //    .WithTags("Products");
 
-            v1.MapGet("/products", (IProductRepository productService) => productService.GetProductsAsync());
+          
             return builder;
         }
     }

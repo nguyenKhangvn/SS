@@ -1,4 +1,5 @@
-﻿namespace Ecommerce.API.Dtos
+﻿using Ecommerce.Infrastructure.Models;
+namespace Ecommerce.Infrastructure.Dtos
 {
     public class ProductQueryParameters : PaginationRequest
     {
