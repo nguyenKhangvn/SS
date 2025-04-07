@@ -13,12 +13,9 @@ namespace Ecommerce.Infrastructure.Mapping
     {
         public AutoMapperProfile()
         {
-            //// Create mappings between DTOs and entities
-            //CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<CategoryDto, Category>().ReverseMap();
-            //CreateMap<ManufacturerDto, Manufacturer>().ReverseMap();
-            //CreateMap<DiscountDto, Discount>().ReverseMap();
-            // Add other mappings as needed
+            CreateMap<StoreLocationDto, StoreLocation>().ReverseMap();
+
         }
     }
 }

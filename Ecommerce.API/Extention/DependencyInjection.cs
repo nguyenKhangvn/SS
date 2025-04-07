@@ -13,8 +13,12 @@ namespace Ecommerce.API.Extention
 
 
             //service
+            // category
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
+            // store location
+            services.AddScoped<IStoreLocationRepository, StoreLocationRepository>();
+            services.AddScoped<IStoreLocationService, StoreLocationService>();
             return services;
         }
     }
