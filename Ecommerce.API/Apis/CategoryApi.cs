@@ -18,6 +18,7 @@ namespace Ecommerce.API.Apis
                 var category = await repo.GetCategoryByIdAsync(categoryId, includeProperties);
                 return category is not null ? Results.Ok(category) : Results.NotFound();
             });
+<<<<<<< HEAD
 
             v1.MapPut("/categorys/{categoryId:guid}", async (ICategoryService categoryService, CreateCategoryDto category,Guid categoryId) =>
             {
@@ -30,6 +31,9 @@ namespace Ecommerce.API.Apis
             });
 
             v1.MapGet("/categorys", (ICategoryService categoryService) => categoryService.GetCategories());
+=======
+            // test dev
+>>>>>>> 96001cb638db269d1a714deb28bcb8858b41ef7d
             return builder;
         }
     }

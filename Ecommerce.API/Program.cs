@@ -27,5 +27,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapProductApi();
 app.MapCategoryApi();
+app.MapStoreLocationApi();
 app.Run();
 
