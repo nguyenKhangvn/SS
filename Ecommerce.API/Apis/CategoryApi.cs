@@ -19,6 +19,7 @@ namespace Ecommerce.API.Apis
                 return category is not null ? Results.Ok(category) : Results.NotFound();
             });
 
+
             v1.MapPut("/categorys/{categoryId:guid}", async (ICategoryService categoryService, CreateCategoryDto category,Guid categoryId) =>
             {
                 if(categoryId == category.Id)

@@ -26,6 +26,10 @@ namespace Ecommerce.API.Extention
             // User
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            // Manufacturer
+            services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
+            services.AddScoped<IManufacturerService, ManufacturerService>();
+
             return services;
         }
     }
