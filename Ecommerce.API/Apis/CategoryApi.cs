@@ -18,10 +18,6 @@ namespace Ecommerce.API.Apis
                 var category = await repo.GetCategoryByIdAsync(categoryId, includeProperties);
                 return category is not null ? Results.Ok(category) : Results.NotFound();
             });
-<<<<<<< HEAD
-
-=======
->>>>>>> 35cb798 (LocLD : add func post and update code store location)
 
             v1.MapPut("/categorys/{categoryId:guid}", async (ICategoryService categoryService, CreateCategoryDto category,Guid categoryId) =>
             {
@@ -35,14 +31,12 @@ namespace Ecommerce.API.Apis
 
             v1.MapGet("/categorys", (ICategoryService categoryService) => categoryService.GetCategories());
 
-<<<<<<< HEAD
             v1.MapDelete("/categorys/{categoryId:guid}", async (ICategoryService categoryService, Guid categoryId) =>
             {
                 var result = await categoryService.DeleteCategory(categoryId);
                 return result ? Results.NoContent() : Results.NotFound();
             });
-=======
->>>>>>> 35cb798 (LocLD : add func post and update code store location)
+
             return builder;
         }
     }

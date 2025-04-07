@@ -1,6 +1,7 @@
 ﻿using Ecommerce.API.Services.Interfaces;
 using Ecommerce.API.Services;
 using Ecommerce.Infrastructure.Mapping;
+using Microsoft.AspNetCore.Identity;
 
 namespace Ecommerce.API.Extention
 {
@@ -22,6 +23,9 @@ namespace Ecommerce.API.Extention
             // Post
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IPostService, PostService>();
+            // User
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }
