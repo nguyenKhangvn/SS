@@ -18,8 +18,7 @@ namespace Ecommerce.API.Repositories
         void AddProductAsync(Product product);
         Task UpdateProductAsync(Product product);
         Task DeleteProductAsync(Guid productId);
-        Task<bool> ProductExistsAsync(Guid productId);
-        Task<int> SaveChangesAsync(); // Thêm phương thức lưu thay đổi nếu dùng Unit of Work pattern
+
 
     }
 }

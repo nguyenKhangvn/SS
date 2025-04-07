@@ -14,20 +14,22 @@ namespace Ecommerce.API.Repositories
         }
         public void AddCategory(Category model)
         {
-            var category = new Category
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Description = model.Description,
-               
-                //Products = model.Products,
-                //SubCategories = model.SubCategories
-
-            };
-
-
-            _service.Categories.Add(category);
+            _service.Categories.Add(model);
             _service.SaveChanges();
+        }
+
+        public bool DeleteCategory(Category category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Category> GetCategories()
+        {
+            return _service.Categories
+                .Include(c => c.ParentCategory)
+                .Include(c => c.SubCategories)
+                .Include(c => c.Products)
+                .ToList();
         }
 
         public async Task<Category?> GetCategoryByIdAsync(Guid categoryId, string? includeProperties = null)
@@ -36,13 +38,21 @@ namespace Ecommerce.API.Repositories
 
             if (!string.IsNullOrWhiteSpace(includeProperties))
             {
-                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includeProperties.Split( ',', StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProperty.Trim());
                 }
             }
 
             return await query.FirstOrDefaultAsync(c => c.Id == categoryId);
+        }
+
+        public async Task<Category> UpdateCategory(Category category)
+        {
+
+            _service.Categories.Update(category);
+            await _service.SaveChangesAsync();
+            return category;
         }
     }
 }
