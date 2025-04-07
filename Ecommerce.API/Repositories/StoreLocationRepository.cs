@@ -33,11 +33,6 @@ namespace Ecommerce.API.Repositories
 
         }
 
-        public IQueryable<StoreLocation> GetAll()
-        {
-            return _context.StoreLocations.AsQueryable();
-        }
-
         public async Task<StoreLocation?> GetByIdAsync(Guid id, string? includeProperties = null)
         {
             var query = _context.StoreLocations.AsQueryable();
@@ -52,11 +47,23 @@ namespace Ecommerce.API.Repositories
 
         }
 
+        public async Task<IEnumerable<StoreLocation>> GetStoreLocationsAsync(string? includeProperties = null)
+        {
+            var query = _context.StoreLocations.AsQueryable();
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                // Thêm các thuộc tính liên kết vào query (Eager Loading)
+                query = query.Include(includeProperties);
+            }
+            return await query.ToListAsync();
+        }
+
         public async Task<StoreLocation> UpdateAsync(StoreLocation storeLocation)
         {
             _context.StoreLocations.Update(storeLocation);
             await _context.SaveChangesAsync();
             return storeLocation;
         }
+        
     }
 }

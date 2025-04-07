@@ -28,5 +28,6 @@ app.UseHttpsRedirection();
 app.MapProductApi();
 app.MapCategoryApi();
 app.MapStoreLocationApi();
+app.MapPostApi();
 app.Run();
 

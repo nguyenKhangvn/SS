@@ -7,7 +7,7 @@ namespace Ecommerce.API.Services.Interfaces
         Task<CategoryDto?> GetCategoryByIdAsync(Guid categoryId, string? includeProperties = null);
         void AddCategory(CreateCategoryDto category);
         Task<CreateCategoryDto> UpdateCategory(CreateCategoryDto category);
-        bool DeleteCategory(CategoryDto category);
+        Task<bool> DeleteCategory(Guid categoryId);
         IEnumerable<CategoryDto> GetCategories();
     }
 }

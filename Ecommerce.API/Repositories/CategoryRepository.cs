@@ -1,4 +1,5 @@
 ﻿
+using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +19,12 @@ namespace Ecommerce.API.Repositories
             _service.SaveChanges();
         }
 
-        public bool DeleteCategory(Category category)
+        public async Task<bool> DeleteCategory(Guid categoryId)
         {
-            throw new NotImplementedException();
+            var res = await  _service.Categories.FindAsync(categoryId);
+            _service.Categories.Remove(res);
+            await _service.SaveChangesAsync();
+            return true;
         }
 
         public IEnumerable<Category> GetCategories()

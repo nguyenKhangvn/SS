@@ -20,6 +20,9 @@ namespace Ecommerce.API.Apis
             });
 <<<<<<< HEAD
 
+=======
+>>>>>>> 35cb798 (LocLD : add func post and update code store location)
+
             v1.MapPut("/categorys/{categoryId:guid}", async (ICategoryService categoryService, CreateCategoryDto category,Guid categoryId) =>
             {
                 if(categoryId == category.Id)
@@ -31,9 +34,15 @@ namespace Ecommerce.API.Apis
             });
 
             v1.MapGet("/categorys", (ICategoryService categoryService) => categoryService.GetCategories());
+
+<<<<<<< HEAD
+            v1.MapDelete("/categorys/{categoryId:guid}", async (ICategoryService categoryService, Guid categoryId) =>
+            {
+                var result = await categoryService.DeleteCategory(categoryId);
+                return result ? Results.NoContent() : Results.NotFound();
+            });
 =======
-            // test dev
->>>>>>> 96001cb638db269d1a714deb28bcb8858b41ef7d
+>>>>>>> 35cb798 (LocLD : add func post and update code store location)
             return builder;
         }
     }

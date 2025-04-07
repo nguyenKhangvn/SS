@@ -16,6 +16,11 @@ namespace Ecommerce.API.Apis
                 var storeLocation = await service.GetByIdAsync(storeLocationId, includeProperties);
                 return storeLocation is not null ? Results.Ok(storeLocation) : Results.NotFound();
             });
+            v1.MapGet("/store-location", async (IStoreLocationService service, [FromQuery] string? includeProperties = null) =>
+            {
+                var storeLocations = await service.GetStoreLocations();
+                return Results.Ok(storeLocations);
+            });
             v1.MapPut("/store-location/{storeLocationId:guid}", async (IStoreLocationService service, Guid storeLocationId, StoreLocationDto dto) =>
             {
                 if (storeLocationId != dto.Id)

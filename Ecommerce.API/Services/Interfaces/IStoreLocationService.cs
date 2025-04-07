@@ -4,7 +4,7 @@ namespace Ecommerce.API.Services.Interfaces
 {
     public interface IStoreLocationService
     {
-        IQueryable<StoreLocationDto> GetAll();
+        Task<IEnumerable<StoreLocationDto>> GetStoreLocations(string? includeProperties = null);
         Task<StoreLocationDto?> GetByIdAsync(Guid id, string includeProperties);
         Task<StoreLocationDto> AddAsync(StoreLocationDto storeLocation);
         Task<StoreLocationDto> UpdateAsync(StoreLocationDto storeLocation);
