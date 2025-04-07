@@ -7,7 +7,7 @@ namespace Ecommerce.API.Repositories
         Task<Category?> GetCategoryByIdAsync(Guid categoryId, string? includeProperties = null);
         void AddCategory(Category category);
         Task<Category> UpdateCategory(Category category);
-        bool DeleteCategory(Category category);
+        Task<bool> DeleteCategory(Guid categoryId);
         IEnumerable<Category> GetCategories();
 
     }

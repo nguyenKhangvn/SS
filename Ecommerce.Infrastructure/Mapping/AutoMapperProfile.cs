@@ -14,6 +14,7 @@ namespace Ecommerce.Infrastructure.Mapping
         public AutoMapperProfile()
         {
             CreateMap<CategoryDto, Category>().ReverseMap();
+            CreateMap<CreateCategoryDto, Category>().ReverseMap();
             CreateMap<StoreLocationDto, StoreLocation>().ReverseMap();
 
         }

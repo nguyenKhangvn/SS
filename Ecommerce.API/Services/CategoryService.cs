@@ -28,9 +28,10 @@ namespace Ecommerce.API.Services
 
 
 
-        public bool DeleteCategory(CategoryDto category)
+        public async Task<bool> DeleteCategory(Guid categoryId)
         {
-            throw new NotImplementedException();
+            var result = await _categoryRepository.DeleteCategory(categoryId);
+            return result;
         }
 
         public IEnumerable<CategoryDto> GetCategories()
@@ -42,20 +43,7 @@ namespace Ecommerce.API.Services
         public async Task<CategoryDto?> GetCategoryByIdAsync(Guid categoryId, string? includeProperties)
         {
             var category = await _categoryRepository.GetCategoryByIdAsync(categoryId, includeProperties);
-
-            if (category == null)
-                return null;
-
-            return new CategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                ParentCategoryId = category.ParentCategoryId,
-                ParentCategoryName = category.ParentCategory?.Name,
-                ProductCount = category.Products?.Count ?? 0,
-                SubCategoryCount = category.SubCategories?.Count ?? 0
-            };
+            return _mapper.Map<CategoryDto>(category);
         }
 
 
@@ -63,11 +51,6 @@ namespace Ecommerce.API.Services
         {
             var categoryToUpdate = _mapper.Map<Category>(category);
             var res = await _categoryRepository.UpdateCategory(categoryToUpdate);
-
-            if ( res == null)
-            {
-                throw new Exception("sai");
-            }
             return _mapper.Map<CreateCategoryDto>(res);
         }
     }
