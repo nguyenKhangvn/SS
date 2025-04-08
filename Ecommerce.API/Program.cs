@@ -32,5 +32,6 @@ app.MapStoreLocationApi();
 app.MapPostApi();
 app.MapUserApi();
 app.MapManufacturerApi();
+app.MapAddressApi();
 app.Run();
 

@@ -20,6 +20,7 @@ namespace Ecommerce.Infrastructure.Mapping
             CreateMap<UserCreateDto, User>().ReverseMap();
             CreateMap<UserDto, User>().ReverseMap();
             CreateMap<ManufacturerDto, Manufacturer>().ReverseMap();
+            CreateMap<AddressDto, Address>().ReverseMap();
         }
     }
 }

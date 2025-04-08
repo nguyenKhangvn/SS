@@ -46,5 +46,6 @@ namespace Ecommerce.Infrastructure.Entity
 
         public bool IsDefaultShipping { get; set; } = false;
         public bool IsDefaultBilling { get; set; } = false;
+        //public bool IsDeleted { get; set; } = false;
     }
 }
