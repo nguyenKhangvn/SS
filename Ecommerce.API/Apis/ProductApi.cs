@@ -1,5 +1,6 @@
 ﻿
 using Ecommerce.Infrastructure.Dtos;
+using Ecommerce.Infrastructure.Models.Dtos;
 
 namespace Ecommerce.API.Apis
 {
