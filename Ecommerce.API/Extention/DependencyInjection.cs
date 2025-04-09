@@ -35,6 +35,9 @@ namespace Ecommerce.API.Extention
             //order
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
+            //product
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductService, ProductService>();
             return services;
         }
     }

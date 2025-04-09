@@ -1,77 +1,56 @@
-﻿
-using System.Linq.Expressions;
+﻿using Ecommerce.Infrastructure.Dtos;
+using Ecommerce.Infrastructure.Models.Dtos;
+using System.Net.WebSockets;
 
 namespace Ecommerce.API.Services
 {
-    public class ProductService : IProductRepository
+    public class ProductService : IProductService
     {
-        private Dictionary<Guid, Product> _products = [];
-        private EcommerceServices _service;
-        public Task AddProductAsync(Product product)
+        private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
+        public ProductService(IProductRepository productRepository, IMapper mapper)
         {
-            _service.DbContext.Products.Add(new Product
+            _productRepository = productRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<ProductDto> AddProductAsync(ProductCreateDto dto)
+        {
+            var product = _mapper.Map<Product>(dto);
+            var added = await _productRepository.AddAsync(product);
+            return _mapper.Map<ProductDto>(added);
+        }
+
+        public async Task<bool> DeleteProductAsync(Guid id)
+        {
+            return await _productRepository.DeleteAsync(id);
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetAllProductAsync(string? includeProperties = null)
+        {
+            var query = await _productRepository.GetAllAsync(includeProperties);
+            return _mapper.Map<IEnumerable<ProductDto>>(query);
+        }
+
+        public async Task<ProductDto?> GetProductByIdAsync(Guid id, string? includeProperties = null)
+        {
+            var product = await _productRepository.GetByIdAsync(id, includeProperties);
+            if (product == null)
             {
-                Name = product.Name,
-                Description = product.Description,
-            });
+                return null;
+            }
+            return _mapper.Map<ProductDto>(product);
+        }
 
-            _service.DbContext.SaveChanges();
-            return Task.FromResult(new Product
+        public async Task<ProductDto?> UpdateProductAsync(Guid id, ProductUpdateDto dto)
+        {
+            var product = _mapper.Map<Product>(dto);
+            var updated = await _productRepository.UpdateAsync(id, product);
+            if (updated == null)
             {
-                Name = product.Name,
-                Description = product.Description,
-            });
-        }
-
-       
-        public Task<bool> DeleteProductAsync(Guid productId)
-        {
-            throw new NotImplementedException();
-        }
-
-     
-
-        public Task<Product?> GetProductByIdAsync(Guid productId, string? includeProperties = null)
-        {
-            throw new NotImplementedException();
-        }
-
-      
-
-        public Task<PaginationResponse<Product>> GetProductsAsync(PaginationRequest pagination, Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string? includeProperties = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Product> GetProductsAsync()
-        {
-            return _products.Values;
-        }
-
-        public Task<bool> ProductExistsAsync(Guid productId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-       
-        public Task UpdateProductAsync(Product product)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IProductRepository.AddProductAsync(Product product)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IProductRepository.DeleteProductAsync(Guid productId)
-        {
-            return DeleteProductAsync(productId);
+                return null;
+            }
+            return _mapper.Map<ProductDto>(updated);
         }
     }
 }

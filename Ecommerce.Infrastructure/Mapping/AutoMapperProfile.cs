@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Ecommerce.Infrastructure.Mapping
 {
@@ -13,16 +9,27 @@ namespace Ecommerce.Infrastructure.Mapping
     {
         public AutoMapperProfile()
         {
+            // category
             CreateMap<CategoryDto, Category>().ReverseMap();
             CreateMap<CreateCategoryDto, Category>().ReverseMap();
+            // store location
             CreateMap<StoreLocationDto, StoreLocation>().ReverseMap();
             CreateMap<PostDto, Post>().ReverseMap();
+            // user
             CreateMap<UserCreateDto, User>().ReverseMap();
             CreateMap<UserDto, User>().ReverseMap();
+            // manufacturer
             CreateMap<ManufacturerDto, Manufacturer>().ReverseMap();
+            // address
             CreateMap<AddressDto, Address>().ReverseMap();
+            // order
             CreateMap<OrderDto, Order>().ReverseMap();
+            //order item
             CreateMap<OrderItemDto, OrderItem>();
+            //product
+            CreateMap<ProductDto, Product>().ReverseMap();
+            CreateMap<ProductCreateDto, Product>().ReverseMap();
+            CreateMap<ProductUpdateDto, Product>().ReverseMap();
 
         }
     }
