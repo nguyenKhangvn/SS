@@ -32,6 +32,9 @@ namespace Ecommerce.Infrastructure.Mapping
             CreateMap<ProductCreateDto, Product>().ReverseMap();
             CreateMap<ProductUpdateDto, Product>().ReverseMap();
 
+            // order item
+            CreateMap<OrderItemDto, OrderItem>().ReverseMap();
+
         }
     }
 }

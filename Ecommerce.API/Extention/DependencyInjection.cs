@@ -42,6 +42,10 @@ namespace Ecommerce.API.Extention
             // coupon
             services.AddScoped<ICouponRepository, CouponRepository>();
             services.AddScoped<ICouponService, CouponService>();
+
+            // order item
+            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
             return services;
         }
     }
