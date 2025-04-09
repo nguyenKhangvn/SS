@@ -12,7 +12,7 @@ namespace Ecommerce.Infrastructure.Entity
     {
         [Required]
         [MaxLength(50)]
-        public string OrderCode { get; set; } = string.Empty; // User-friendly code
+        public string OrderCode { get; set; } = string.Empty;
 
         // Foreign Keys
         public Guid UserId { get; set; }

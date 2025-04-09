@@ -29,7 +29,12 @@ namespace Ecommerce.API.Extention
             // Manufacturer
             services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
             services.AddScoped<IManufacturerService, ManufacturerService>();
-
+            // Address
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
+            //order
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
             return services;
         }
     }
