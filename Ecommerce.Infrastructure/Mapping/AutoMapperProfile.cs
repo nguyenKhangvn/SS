@@ -26,6 +26,7 @@ namespace Ecommerce.Infrastructure.Mapping
             CreateMap<OrderDto, Order>().ReverseMap();
             //order item
             CreateMap<OrderItemDto, OrderItem>();
+            CreateMap<Coupon, CouponDto>().ReverseMap();
             //product
             CreateMap<ProductDto, Product>().ReverseMap();
             CreateMap<ProductCreateDto, Product>().ReverseMap();

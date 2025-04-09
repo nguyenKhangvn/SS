@@ -38,6 +38,10 @@ namespace Ecommerce.API.Extention
             //product
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+
+            // coupon
+            services.AddScoped<ICouponRepository, CouponRepository>();
+            services.AddScoped<ICouponService, CouponService>();
             return services;
         }
     }
