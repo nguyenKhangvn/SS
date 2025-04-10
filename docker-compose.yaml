@@ -16,7 +16,7 @@ services:
 
   migration-service:
     build:
-      context: .
+      context: Ecommerce.MigrationService
       dockerfile: Dockerfile
     container_name: ecommerce-migration
     environment:
