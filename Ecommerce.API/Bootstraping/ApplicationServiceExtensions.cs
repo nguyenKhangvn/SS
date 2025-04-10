@@ -21,12 +21,25 @@ public static class ApplicationServiceExtensions
             }
         );
 
-        builder.AddNpgsqlDbContext<EcommerceDbContext>("ecommerce-db", configureDbContextOptions: dbContextOptionsBuilder =>
+        //builder.AddNpgsqlDbContext<EcommerceDbContext>("ecommerce-db", configureDbContextOptions: dbContextOptionsBuilder =>
+        //{
+        //    dbContextOptionsBuilder.UseNpgsql(builder => builder.MigrationsAssembly(typeof(EcommerceDbContext).Assembly.FullName));
+        //});
+        builder.Services.AddDbContext<EcommerceDbContext>(options =>
         {
-            dbContextOptionsBuilder.UseNpgsql(builder => builder.MigrationsAssembly(typeof(EcommerceDbContext).Assembly.FullName));
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            // *** THÊM LOGGING Ở ĐÂY ***
+            Console.WriteLine($"--- Retrieved Connection String: {connectionString} ---"); // Hoặc dùng ILogger nếu đã có
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                Console.WriteLine("--- ERROR: Connection string 'DefaultConnection' is NULL or EMPTY! ---");
+            }
+            // *************************
+
+            options.UseNpgsql(connectionString,
+                npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(EcommerceDbContext).Assembly.FullName));
         });
 
-     
 
         return builder;
     }
