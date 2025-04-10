@@ -13,8 +13,18 @@ namespace Ecommerce.Infrastructure.Data
         public EcommerceDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<EcommerceDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Database=ecommerce;Username=postgres;Password=postgres");
+
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings_DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = "Host=localhost;Database=ecommerce;Username=postgres;Password=postgres";
+            }
+
+            optionsBuilder.UseNpgsql(connectionString);
+
             return new EcommerceDbContext(optionsBuilder.Options);
         }
+
     }
 }
