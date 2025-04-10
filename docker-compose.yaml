@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  postgres:
+  ecommerce-db:
     image: postgres:16
     container_name: ecommerce-db
     restart: always
@@ -16,16 +16,29 @@ services:
 
   migration-service:
     build:
-      context: Ecommerce.MigrationService
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Ecommerce.MigrationService/Dockerfile
     container_name: ecommerce-migration
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings_DefaultConnection: "Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     depends_on:
-      - postgres
+      - ecommerce-db
     restart: on-failure
     tty: true
 
+  ecommerce-api:
+    build:
+      context: .
+      dockerfile: Ecommerce.API/Dockerfile
+    container_name: ecommerce-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    ports:
+      - "5000:8080" # Cho phép FE gọi http://localhost:5000
+    depends_on:
+      - ecommerce-db
+      - migration-service
 volumes:
   pgdata:
