@@ -27,6 +27,19 @@ services:
     restart: on-failure
     tty: true
 
+  # ecommerce-apphost:
+  #   build:
+  #     context: .
+  #     dockerfile: Ecommerce/Ecommerce.AppHost/Dockerfile
+  #   container_name: ecommerce-apphost
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
+  #     ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+  #   ports:
+  #     - "5000:8080"
+  #   depends_on:
+  #     - ecommerce-db
+  #     - migration-service
   ecommerce-api:
     build:
       context: .
