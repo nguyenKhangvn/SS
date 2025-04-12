@@ -2,11 +2,11 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres")
             .WithImageTag("latest")
-            .WithVolume("ecommerce-db", "/var/lib/postgresql/data")
+            .WithVolume("ecommerce-dbct", "/var/lib/postgresql/data")
             .WithLifetime(ContainerLifetime.Persistent)
             .WithPgWeb();
 
-var ecommerceDb = postgres.AddDatabase("ecommerce-db", "ecommerce");
+var ecommerceDb = postgres.AddDatabase("ecommerce-dbct", "ecommerce");
 
 var migrationService = builder.AddProject<Projects.Ecommerce_MigrationService>("ecommerce-migrationservice")
                         .WithReference(ecommerceDb)

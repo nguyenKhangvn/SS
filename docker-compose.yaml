@@ -1,18 +1,18 @@
 version: "3.9"
 
 services:
-  ecommerce-db:
-    image: postgres:16
-    container_name: ecommerce-db
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+  # ecommerce-db:
+  #   image: postgres:16
+  #   container_name: ecommerce-db
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #   ports:
+  #     - "${POSTGRES_PORT}:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
 
   migration-service:
     build:
@@ -21,9 +21,9 @@ services:
     container_name: ecommerce-migration
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
-    depends_on:
-      - ecommerce-db
+      ConnectionStrings__DefaultConnection: "Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    # depends_on:
+      # - ecommerce-db
     restart: on-failure
     tty: true
 
@@ -35,6 +35,7 @@ services:
   #   environment:
   #     ASPNETCORE_ENVIRONMENT: Development
   #     ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+  #      ConnectionStrings__DefaultConnection: "${POSTGRES_URL}"
   #   ports:
   #     - "5000:8080"
   #   depends_on:
@@ -47,11 +48,11 @@ services:
     container_name: ecommerce-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=ecommerce-db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     ports:
       - "5000:8080" # Cho phép FE gọi http://localhost:5000
     depends_on:
-      - ecommerce-db
+      # - ecommerce-db
       - migration-service
-volumes:
-  pgdata:
+# volumes:
+#   pgdata:
