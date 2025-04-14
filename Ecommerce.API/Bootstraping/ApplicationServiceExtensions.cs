@@ -74,21 +74,21 @@ public static class ApplicationServiceExtensions
         // Log connection string để debug
         var loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder.AddConsole());
 
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
+        //if (string.IsNullOrWhiteSpace(connectionString))
+        //{
      
-            // Fallback: Sử dụng Aspire nếu không có trong appsettings
-            builder.AddNpgsqlDbContext<EcommerceDbContext>("ecommerce-dbct", configureDbContextOptions: options =>
-            {
-                options.UseNpgsql(npgsqlBuilder =>
-                {
-                    npgsqlBuilder.MigrationsAssembly(typeof(EcommerceDbContext).Assembly.FullName);
-                    npgsqlBuilder.EnableRetryOnFailure(3);
-                });
-            });
-        }
-        else
-        {
+        //    // Fallback: Sử dụng Aspire nếu không có trong appsettings
+        //    builder.AddNpgsqlDbContext<EcommerceDbContext>("ecommerce-dbct", configureDbContextOptions: options =>
+        //    {
+        //        options.UseNpgsql(npgsqlBuilder =>
+        //        {
+        //            npgsqlBuilder.MigrationsAssembly(typeof(EcommerceDbContext).Assembly.FullName);
+        //            npgsqlBuilder.EnableRetryOnFailure(3);
+        //        });
+        //    });
+        //}
+        //else
+        //{
             // Ưu tiên dùng connection string từ appsettings.json
             builder.Services.AddDbContext<EcommerceDbContext>(options =>
             {
@@ -98,7 +98,7 @@ public static class ApplicationServiceExtensions
                     npgsqlOptions.EnableRetryOnFailure(3);
                 });
             });
-        }
+        //}
 
         return builder;
     }
