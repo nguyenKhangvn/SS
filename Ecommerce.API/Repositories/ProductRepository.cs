@@ -39,6 +39,7 @@ namespace Ecommerce.API.Repositories
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+
             return product;
         }
         public async Task<Product?> UpdateAsync(Guid id,Product product)

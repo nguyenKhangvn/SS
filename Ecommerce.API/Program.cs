@@ -12,10 +12,24 @@ builder.AddApplicationServices();
 builder.Services.AddExtentionServices();
 builder.Services.AddScoped<PasswordHasher<User>>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+
+
+app.UseCors("AllowAll");
 
 
 
@@ -34,7 +48,6 @@ app.MapUserApi();
 app.MapManufacturerApi();
 app.MapAddressApi();
 app.MapOrderApi();
-app.MapProductApi();
 app.MapCouponAPi();
 app.MapOrderItemApi();
 app.Run();

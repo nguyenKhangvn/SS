@@ -10,6 +10,7 @@ namespace Ecommerce.API.Apis
         {
             var vApi = builder.NewVersionedApi("ecommerce");
             var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0);
 
             v1.MapPost("/products", (IProductService productService, ProductCreateDto product) => productService.AddProductAsync(product));
             v1.MapGet("/products/{productId:guid}", async (IProductService service, Guid productId, [FromQuery] string? includeProperties = null) =>
