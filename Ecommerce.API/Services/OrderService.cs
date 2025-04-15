@@ -30,6 +30,8 @@ namespace Ecommerce.API.Services
         public async Task<OrderDto> CreateAsync(OrderDto dto)
         {
             var orderEntity = _mapper.Map<Order>(dto);
+            orderEntity.OrderCode = $"ORD-{DateTime.UtcNow.Ticks}";
+            orderEntity.Status = OrderStatus.PENDING;
             var createdOrder = await _orderRepository.CreateAsync(orderEntity);
             return _mapper.Map<OrderDto>(createdOrder);
         }
