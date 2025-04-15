@@ -19,7 +19,7 @@ namespace Ecommerce.API.Apis
                 var result = await service.GetByIdAsync(id);
                 return result == null ? Results.NotFound() : Results.Ok(result);
             });
-            //[GET] http://localhost:5000/api/v1/ecommerce/address/
+            //[POST] http://localhost:5000/api/v1/ecommerce/address/
             v1.MapPost("/address", async ([FromBody] AddressDto dto, [FromServices] IAddressService service) =>
             {
                 var created = await service.CreateAsync(dto);
@@ -31,7 +31,7 @@ namespace Ecommerce.API.Apis
                 var updated = await service.UpdateAsync(dto);
                 return updated == null ? Results.NotFound() : Results.Ok(updated);
             });
-            //[GET] http://localhost:5000/api/v1/ecommerce/address/
+            //[DELETE] http://localhost:5000/api/v1/ecommerce/address/
             v1.MapDelete("/address/{id:guid}", async (Guid id, [FromServices] IAddressService service) =>
             {
                 var deleted = await service.DeleteAsync(id);

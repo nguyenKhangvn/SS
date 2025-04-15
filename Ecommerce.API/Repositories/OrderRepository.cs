@@ -27,12 +27,6 @@ namespace Ecommerce.API.Repositories
 
         public async Task<Order> CreateAsync(Order order)
         {
-            order.OrderCode = $"ORD-{DateTime.UtcNow.Ticks}";
-            order.Status = OrderStatus.PENDING;
-
-            PrepareOrderItems(order);
-            CalculateTotals(order);
-
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             return order;
@@ -40,9 +34,6 @@ namespace Ecommerce.API.Repositories
 
         public async Task<Order> UpdateAsync(Order order)
         {
-            PrepareOrderItems(order);
-            CalculateTotals(order);
-
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
             return order;
@@ -56,25 +47,6 @@ namespace Ecommerce.API.Repositories
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        private void PrepareOrderItems(Order order)
-        {
-            if (order.OrderItems == null) return;
-
-            foreach (var item in order.OrderItems)
-            {
-                if (item.Id == Guid.Empty)
-                    item.Id = Guid.NewGuid();
-
-                item.TotalItemPrice = item.PriceAtOrder * item.Quantity;
-            }
-        }
-
-        private void CalculateTotals(Order order)
-        {
-            order.SubTotal = order.OrderItems?.Sum(i => i.TotalItemPrice) ?? 0;
-            order.TotalAmount = order.SubTotal + order.ShippingCost - order.DiscountAmount;
         }
     }
 }

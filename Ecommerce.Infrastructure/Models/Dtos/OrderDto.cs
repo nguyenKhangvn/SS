@@ -8,6 +8,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
 {
     public class OrderDto
     {
+        public string OrderCode { get; set; } = string.Empty;
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid ShippingAddressId { get; set; }
@@ -15,6 +16,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public Guid? CouponId { get; set; }
         public Guid? PaymentId { get; set; }
         public string? Notes { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public List<OrderItemDto> OrderItems { get; set; } = new();
     }

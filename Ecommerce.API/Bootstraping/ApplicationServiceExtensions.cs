@@ -68,6 +68,7 @@ public static class ApplicationServiceExtensions
             );
         });
 
+
         // 3. Cấu hình DbContext (kết hợp Aspire + appsettings)
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
