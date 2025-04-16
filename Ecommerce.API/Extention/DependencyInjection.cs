@@ -26,6 +26,8 @@ namespace Ecommerce.API.Extention
             // User
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            // password hasher
+            services.AddScoped<PasswordHasher<User>>();
             // Manufacturer
             services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
             services.AddScoped<IManufacturerService, ManufacturerService>();
@@ -46,6 +48,9 @@ namespace Ecommerce.API.Extention
             // order item
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             services.AddScoped<IOrderItemService, OrderItemService>();
+
+            //vnpay
+            services.AddSingleton<IVnPayService, VnPayService>();
             return services;
         }
     }

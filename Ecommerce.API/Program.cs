@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddApplicationServices();
 builder.Services.AddExtentionServices();
-builder.Services.AddScoped<PasswordHasher<User>>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -50,5 +50,6 @@ app.MapAddressApi();
 app.MapOrderApi();
 app.MapCouponAPi();
 app.MapOrderItemApi();
+app.MapPaymentApi();
 app.Run();
 

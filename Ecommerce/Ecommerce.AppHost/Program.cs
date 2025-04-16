@@ -17,6 +17,15 @@ var migrationService = builder.AddProject<Projects.Ecommerce_MigrationService>("
 builder.AddProject<Projects.Ecommerce_API>("ecommerce-api")
      //.WithReference(ecommerceDb)
      //.WaitFor(postgres)
+     .WithEnvironment("VnPay__TmnCode", "4RDRDK85")
+     .WithEnvironment("VnPay__HashSecret", "YOUQN1ZD393OLJ6C4GAQKSD2UUS2MRPQ")
+     .WithEnvironment("VnPay__BaseUrl", "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html")
+     .WithEnvironment("VnPay__Version", "2.1.0")
+     .WithEnvironment("VnPay__Command", "pay")
+     .WithEnvironment("VnPay__CurrCode", "VND")
+     .WithEnvironment("VnPay__Locale", "vn")
+     .WithEnvironment("VnPay__ReturnUrl", "https://localhost:7074/Cart/PaymentCallBack")
+     .WithEnvironment("TimeZoneId", "SE Asia Standard Time")
      .WithEnvironment("ConnectionStrings__DefaultConnection", "Host=interchange.proxy.rlwy.net;Port=36251;Database=railway;Username=postgres;Password=RSXCNtCPkscFmrKSYCDRbjAvKtNsikAZ")
      .WaitForCompletion(migrationService);
 ;
