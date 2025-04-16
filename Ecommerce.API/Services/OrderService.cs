@@ -48,7 +48,11 @@ namespace Ecommerce.API.Services
            return await _orderRepository.DeleteAsync(id);
         }
 
-       
+        public async Task<OrderDto?> UpdateStatusAsync(Guid id, string Status)
+        {
+            var updatedOrder = await _orderRepository.UpdateStatusAsync(id, Status);
+            return updatedOrder == null ? null : _mapper.Map<OrderDto>(updatedOrder);
+        }
     }
 
 
