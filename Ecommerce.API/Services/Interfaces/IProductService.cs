@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
+using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 
 namespace Ecommerce.API.Services.Interfaces
 {
