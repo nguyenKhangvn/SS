@@ -49,10 +49,22 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      # VNPay Configuration
+      VnPay__TmnCode: ${VNPAY_TMN_CODE}
+      VnPay__HashSecret: ${VNPAY_HASH_SECRET}
+      VnPay__BaseUrl: ${VNPAY_BASE_URL}
+      VnPay__Version: ${VNPAY_VERSION}
+      VnPay__Command: ${VNPAY_COMMAND}
+      VnPay__CurrCode: ${VNPAY_CURR_CODE}
+      VnPay__Locale: ${VNPAY_LOCALE}
+      VnPay__ReturnUrl: ${VNPAY_RETURN_URL}
+      TimeZoneId: ${TIMEZONE_ID}
     ports:
       - "5000:8080" # Cho phép FE gọi http://localhost:5000
     depends_on:
       # - ecommerce-db
       - migration-service
+
+
 # volumes:
 #   pgdata:
