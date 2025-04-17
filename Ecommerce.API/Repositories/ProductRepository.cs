@@ -1,4 +1,6 @@
 ﻿using Asp.Versioning;
+using AutoMapper.QueryableExtensions;
+using Ecommerce.Infrastructure.Entity;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 
@@ -13,7 +15,13 @@ namespace Ecommerce.API.Repositories
         }
         public async Task<IEnumerable<Product>> GetAllAsync(string? include = null)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products
+                            .Include(p => p.Category)
+                            .Include(p => p.Manufacturer)
+                            .Include(p => p.Discount)
+                            .Include(p => p.Images)
+                            .AsQueryable();
+
             if (!string.IsNullOrWhiteSpace(include))
             {
                 foreach(var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
@@ -21,6 +29,7 @@ namespace Ecommerce.API.Repositories
                     query = query.Include(prop.Trim());
                 }
             }
+           
             return await query.ToListAsync();
         }
         public async Task<Product?> GetByIdAsync(Guid id, string? include = null)
@@ -39,7 +48,12 @@ namespace Ecommerce.API.Repositories
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-
+            //await _context.Entry(product)
+            //    .Reference(p => p.Category).LoadAsync();
+            //await _context.Entry(product)
+            //    .Reference(p => p.Manufacturer).LoadAsync();
+            //await _context.Entry(product)
+            //    .Reference(p => p.Discount).LoadAsync();
             return product;
         }
         public async Task<Product?> UpdateAsync(Guid id,Product product)

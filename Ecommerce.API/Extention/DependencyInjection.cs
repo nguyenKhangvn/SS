@@ -2,6 +2,7 @@
 using Ecommerce.API.Services;
 using Ecommerce.Infrastructure.Mapping;
 using Microsoft.AspNetCore.Identity;
+//using Ecommerce.API.Repositories.Interfaces;
 
 namespace Ecommerce.API.Extention
 {
@@ -51,6 +52,14 @@ namespace Ecommerce.API.Extention
 
             //vnpay
             services.AddSingleton<IVnPayService, VnPayService>();
+
+            // image
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+
+            //chat
+            //services.AddScoped<IChatRepository, ChatRepository>();
+            //services.AddScoped<IChatService, ChatService>();
             return services;
         }
     }
