@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Ecommerce.API.Apis
 {
@@ -33,6 +34,16 @@ namespace Ecommerce.API.Apis
             {
                 var success = await service.DeleteAsync(orderId);
                 return success ? Results.Ok() : Results.NotFound();
+            });
+
+            v1.MapPut("/order/{orderId:guid}/status", async (IOrderService service, Guid orderId, [FromBody] UpdateOrderStatusDto dto) =>
+            {
+                var result = await service.UpdateStatusAsync(orderId, dto.Status);
+                if (result == null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok();
             });
 
             return builder;

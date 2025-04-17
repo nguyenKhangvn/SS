@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Ecommerce.Infrastructure.Entity;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Ecommerce.Infrastructure.Models.Dtos
@@ -17,8 +20,15 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public Guid? PaymentId { get; set; }
         public string? Notes { get; set; }
         public decimal TotalAmount { get; set; }
-
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public OrderStatus Status { get; set; } = OrderStatus.PENDING;
         public List<OrderItemDto> OrderItems { get; set; } = new();
+    }
+
+    public class UpdateOrderStatusDto
+    {
+        [EnumDataType(typeof(OrderStatus))]
+        public string Status { get; set; }
     }
 
 }

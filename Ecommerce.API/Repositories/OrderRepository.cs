@@ -48,5 +48,23 @@ namespace Ecommerce.API.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<Order?> UpdateStatusAsync(Guid id, string Status)
+        {
+            var existingOrder = await _context.Orders.FindAsync(id);
+            if (existingOrder == null)
+                return null;
+
+            if (!Enum.TryParse<OrderStatus>(Status, out var orderStatus))
+            {
+                throw new ArgumentException($"Invalid order status: {Status}");
+            }
+
+            existingOrder.Status = orderStatus;
+
+            _context.Orders.Update(existingOrder);
+            await _context.SaveChangesAsync();
+            return existingOrder;
+        }
+
     }
 }
