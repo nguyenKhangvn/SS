@@ -2,7 +2,7 @@
 using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
 using System.Net.WebSockets;
-using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
+using ProductQueryParameters = Ecommerce.Infrastructure.Models.ProductQueryParameters;
 
 namespace Ecommerce.API.Services
 {
@@ -107,6 +107,24 @@ namespace Ecommerce.API.Services
             return _mapper.Map<ProductDto>(updated);
         }
 
-        
+        public async Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
+            ProductQueryParameters parameters,
+            CancellationToken cancellationToken = default)
+        {
+            var paginatedResponse = await _productRepository.GetAllProductsPaginatedAsync(
+                parameters,
+                cancellationToken
+            );
+
+            var itemDtos = _mapper.Map<IEnumerable<ProductDto>>(paginatedResponse.Items);
+
+            return new PaginationResponse<ProductDto>(
+                paginatedResponse.PageIndex,
+                paginatedResponse.PageSize,
+                paginatedResponse.TotalCount,
+                itemDtos
+            );
+        }
+
     }
 }

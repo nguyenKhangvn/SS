@@ -14,6 +14,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string? PhoneNumber { get; set; }
         public string Role { get; set; } = RoleStatus.CUSTOMER.ToString();
         public bool IsActive { get; set; }
+        public string? Token { get; set; }
     }
     public class UserCreateDto
     {

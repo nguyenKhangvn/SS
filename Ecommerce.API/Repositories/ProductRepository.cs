@@ -78,5 +78,69 @@ namespace Ecommerce.API.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<PaginationResponse<Product>> GetAllProductsPaginatedAsync(
+            ProductQueryParameters parameters,
+            CancellationToken cancellationToken = default)
+        {
+            var query = _context.Products.AsQueryable();
+
+            // Filter
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+                query = query.Where(p => p.Name.Contains(parameters.SearchTerm));
+
+            if (parameters.CategoryId.HasValue)
+                query = query.Where(p => p.CategoryId == parameters.CategoryId);
+
+            if (parameters.MinPrice.HasValue)
+                query = query.Where(p => p.Price >= parameters.MinPrice);
+
+            if (parameters.MaxPrice.HasValue)
+                query = query.Where(p => p.Price <= parameters.MaxPrice);
+
+            if (parameters.IsActive.HasValue)
+                query = query.Where(p => p.IsActive == parameters.IsActive);
+
+            // Sort
+            // Sort
+            if (!string.IsNullOrEmpty(parameters.SortBy))
+            {
+                var propertyInfo = typeof(Product).GetProperty(parameters.SortBy);
+                if (propertyInfo != null)
+                {
+                    if (parameters.SortOrder?.ToLower() == "desc")
+                    {
+                        query = query.OrderByDescending(p => EF.Property<object>(p, parameters.SortBy));
+                    }
+                    else
+                    {
+                        query = query.OrderBy(p => EF.Property<object>(p, parameters.SortBy));
+                    }
+                }
+            }
+
+            // Include
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                foreach (var prop in parameters.SearchTerm.Split(','))
+                {
+                    query = query.Include(prop.Trim());
+                }
+            }
+
+            // Pagination
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((parameters.PageIndex - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return new PaginationResponse<Product>(
+                parameters.PageIndex,
+                parameters.PageSize,
+                totalCount,
+                items
+            );
+        }
     }
 }
