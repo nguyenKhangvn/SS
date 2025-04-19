@@ -9,6 +9,7 @@ namespace Ecommerce.API.Apis
         {
             var vApi = builder.NewVersionedApi("ecommerce");
             var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+
             // [POSt] http://localhost:5000/api/v1/ecommerce/users
             v1.MapPost("/users", (IUserService userService, UserCreateDto user) => userService.AddAsync(user));
             // [GET] http://localhost:5000/api/v1/ecommerce/users
@@ -40,18 +41,14 @@ namespace Ecommerce.API.Apis
                 var success = await service.DeleteAsync(userId);
                 return success ? Results.Ok() : Results.NotFound();
             });
-            // [POSt] http://localhost:5000/api/v1/ecommerce/users
-            v1.MapPost("/users/register", async (UserCreateDto dto, IUserService service) =>
+
+            //
+            v1.MapGet("/users/email/{email}", async (IUserService service, string email) =>
             {
-                var result = await service.RegisterAsync(dto);
-                return result == null ? Results.BadRequest("Email đã tồn tại.") : Results.Ok(result);
+                var user = await service.GetByEmailAsync(email);
+                return user is not null ? Results.Ok(user) : Results.NotFound();
             });
 
-            v1.MapPost("/users/login", async (UserLoginDto dto, IUserService service) =>
-            {
-                var result = await service.LoginAsync(dto);
-                return result == null ? Results.Unauthorized() : Results.Ok(result);
-            });
             return builder;
         }
     }

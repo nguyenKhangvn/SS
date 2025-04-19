@@ -48,10 +48,10 @@ namespace Ecommerce.Infrastructure.Data
         public EcommerceDbContext CreateDbContext(string[] args)
         {
             // Sửa lại base path cho phù hợp với Docker container
-            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../../Ecommerce.API");
+          
 
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)  // Chỉnh sửa đường dẫn
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
                 .AddEnvironmentVariables()  // Ưu tiên biến môi trường từ Docker Compose

@@ -60,6 +60,13 @@ namespace Ecommerce.API.Extention
             //chat
             //services.AddScoped<IChatRepository, ChatRepository>();
             //services.AddScoped<IChatService, ChatService>();
+            //auth
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IAuthService, AuthService>();
+
             return services;
         }
     }

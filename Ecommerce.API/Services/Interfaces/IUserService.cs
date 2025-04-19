@@ -9,7 +9,9 @@ namespace Ecommerce.API.Services.Interfaces
         Task<UserDto> AddAsync(UserCreateDto dto);
         Task<UserDto?> UpdateAsync(Guid id, UserCreateDto dto);
         Task<bool> DeleteAsync(Guid id);
-        Task<UserDto?> LoginAsync(UserLoginDto dto);
-        Task<UserDto?> RegisterAsync(UserCreateDto dto);
+
+        Task<UserDto?> GetByEmailAsync(string email);
+        //Task<UserDto?> LoginAsync(UserLoginDto dto);
+        //Task<UserDto?> RegisterAsync(UserCreateDto dto);
     }
 }

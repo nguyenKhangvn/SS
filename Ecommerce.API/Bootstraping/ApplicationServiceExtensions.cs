@@ -100,7 +100,7 @@ public static class ApplicationServiceExtensions
                 });
             });
         //}
-
+        builder.Services.AddHttpContextAccessor();
 
         return builder;
     }

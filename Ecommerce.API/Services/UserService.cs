@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Ecommerce.API.Services
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly PasswordHasher<User> _passwordHasher;
@@ -73,36 +73,15 @@ namespace Ecommerce.API.Services
             var updatedUser = await _userRepository.UpdateAsync(user);
             return _mapper.Map<UserDto>(updatedUser);
         }
-        public async Task<UserDto?> LoginAsync(UserLoginDto dto)
+
+        public async Task<UserDto?> GetByEmailAsync(string email)
         {
-            var user = (await _userRepository.GetAllAsync()).FirstOrDefault(u => u.Email == dto.Email);
-            if (user == null) return null;
-
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed) return null;
-
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                return null;
+            }
             return _mapper.Map<UserDto>(user);
         }
-        public async Task<UserDto?> RegisterAsync(UserCreateDto dto)
-        {
-            var existing = (await _userRepository.GetAllAsync())
-                .FirstOrDefault(u => u.Email == dto.Email);
-            if (existing != null) return null; // Email đã tồn tại
-
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                Email = dto.Email,
-                Name = dto.Name,
-                PhoneNumber = dto.PhoneNumber,
-                Role = Enum.Parse<RoleStatus>(dto.Role, true),
-                IsActive = dto.IsActive
-            };
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
-            var created = await _userRepository.AddAsync(user);
-            return _mapper.Map<UserDto>(created);
-        }
-
     }
 }

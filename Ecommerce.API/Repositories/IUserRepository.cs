@@ -7,5 +7,6 @@
         Task<User> AddAsync(User user);
         Task<User?> UpdateAsync(User user);
         Task<bool> DeleteAsync(Guid id);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }

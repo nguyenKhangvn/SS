@@ -51,5 +51,6 @@ app.MapPaymentApi();
 //app.MapHub<ChatHub>("/chatHub");
 //app.MapChatApi();
 app.MapImageApi();
+app.MapAuthApi();
 app.Run();
 
