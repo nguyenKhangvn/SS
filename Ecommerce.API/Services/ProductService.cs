@@ -1,7 +1,10 @@
 ﻿using Ecommerce.API.Services.Interfaces;
 using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Globalization;
 using System.Net.WebSockets;
+using System.Text.RegularExpressions;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 
 namespace Ecommerce.API.Services
@@ -20,6 +23,8 @@ namespace Ecommerce.API.Services
 
         public async Task<ProductDto> AddProductAsync([FromForm] ProductCreateDto dto)
         {
+            dto.Slug = GenerateSlug(dto.Name);
+
             var product = _mapper.Map<Product>(dto);
 
             var added = await _productRepository.AddAsync(product);
@@ -107,6 +112,24 @@ namespace Ecommerce.API.Services
             return _mapper.Map<ProductDto>(updated);
         }
 
-        
+        private static string GenerateSlug(string name)
+        {
+            string normalized = name.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD);
+            var slug = new string(normalized
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+
+            slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+            slug = Regex.Replace(slug, @"\s+", "-");
+            slug = Regex.Replace(slug, @"-+", "-");
+
+            return slug.Trim('-');
+        }
+
+        public async Task<ProductDto?> GetProductBySlugAsync(string slug)
+        {
+            var product = await _productRepository.GetBySlugAsync(slug);
+            return product == null ? null : _mapper.Map<ProductDto>(product);
+        }
     }
 }

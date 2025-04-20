@@ -11,6 +11,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ProductDto> AddProductAsync(ProductCreateDto dto);
         Task<ProductDto?> UpdateProductAsync(Guid id, ProductUpdateDto dto);
         Task<bool> DeleteProductAsync(Guid id);
-
+        Task<ProductDto?> GetProductBySlugAsync(string slug);
     }
 }

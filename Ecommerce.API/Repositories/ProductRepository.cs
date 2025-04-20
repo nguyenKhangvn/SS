@@ -2,7 +2,9 @@
 using AutoMapper.QueryableExtensions;
 using Ecommerce.Infrastructure.Entity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Net.WebSockets;
+using System.Text.RegularExpressions;
 
 namespace Ecommerce.API.Repositories
 {
@@ -78,5 +80,9 @@ namespace Ecommerce.API.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Product?> GetBySlugAsync(string slug)
+            => await _context.Products.FirstOrDefaultAsync(p => p.Slug == slug);
+
     }
 }

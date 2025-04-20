@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Builder;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 
 namespace Ecommerce.API.Apis
@@ -47,6 +48,32 @@ namespace Ecommerce.API.Apis
                 return success ? Results.Ok() : Results.NotFound();
             });
 
+            //get san pham 
+            v1.MapGet("/products", async ( [FromQuery] string? id,
+                                           [FromQuery] string? slug,
+                                           IProductService productService) =>
+             {
+                if (!string.IsNullOrEmpty(slug))
+                {
+                    var productBySlug = await productService.GetProductBySlugAsync(slug);
+                    return productBySlug is null
+                        ? Results.NotFound()
+                        : Results.Ok(productBySlug);
+                }
+
+                if (Guid.TryParse(id, out var productId))
+                {
+                    var product = await productService.GetProductByIdAsync(productId);
+                    return product is null ? Results.NotFound() : Results.Ok(product);
+                }
+
+                return Results.BadRequest("id san phẩm không hợp lệ");
+            })
+                 .WithName("GetProduct")
+                 .Produces<ProductDto>(StatusCodes.Status200OK)
+                 .Produces(StatusCodes.Status400BadRequest)
+                 .Produces(StatusCodes.Status404NotFound);
+
 
             v1.MapPost("/test-upload", async (HttpRequest request) =>
             {
@@ -73,6 +100,8 @@ namespace Ecommerce.API.Apis
                 var xsrfToken = tokens.RequestToken!;
                 return TypedResults.Content(xsrfToken, "text/plain");
             });
+
+            
             return builder;
         }
     }

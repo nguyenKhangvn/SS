@@ -9,6 +9,6 @@ namespace Ecommerce.API.Repositories
             Task<Product> AddAsync(Product product);
             Task<Product?> UpdateAsync(Guid id, Product product);
             Task<bool> DeleteAsync(Guid id);
-        
+            Task<Product?> GetBySlugAsync(string slug);
     }
 }

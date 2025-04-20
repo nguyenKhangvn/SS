@@ -26,6 +26,7 @@ namespace Ecommerce.Infrastructure.Entity
 
         public bool IsActive { get; set; } = true; // Trạng thái kích hoạt của sản phẩm
 
+        public string Slug { get; set; } = string.Empty;
         // --- Foreign Keys ---
         // Khóa ngoại liên kết đến Category
         public Guid CategoryId { get; set; }
@@ -35,6 +36,8 @@ namespace Ecommerce.Infrastructure.Entity
 
         // Khóa ngoại liên kết đến Discount (có thể null nếu sản phẩm không có giảm giá)
         public Guid? DiscountId { get; set; }
+
+
 
         // --- Navigation Properties ---
         // Giúp truy cập dễ dàng đến các đối tượng liên quan thông qua ORM

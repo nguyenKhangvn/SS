@@ -14,6 +14,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string CategoryName { get; set; } = default!;
         public string ManufacturerName { get; set; } = default!;
         public string? DiscountName { get; set; }
+        public string Slug { get; set; } = default!;
         public List<ImageDto> Images { get; set; } = new List<ImageDto>();
     }
 
@@ -23,6 +24,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public bool IsActive { get; set; } = true;
+        public string? Slug { get; set; } = default!;
         public Guid CategoryId { get; set; }
         public Guid ManufacturerId { get; set; }
         public Guid? DiscountId { get; set; }

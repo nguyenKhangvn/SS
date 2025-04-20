@@ -44,20 +44,42 @@ namespace Ecommerce.API.Services
 
         public async Task<AuthResponseDto> LoginAsync(LoginRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
+            // xet authen
             var user = await _userRepository.GetUserByEmailAsync(request.Email);
-            if (user == null || _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+            if (user == null || _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password)
+                == PasswordVerificationResult.Failed)
+            {
                 throw new UnauthorizedAccessException("Invalid credentials");
+            }
 
-            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-
+            // tao token
             var accessToken = _tokenService.GenerateJwtToken(user);
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(15);
+
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var refreshToken = await CreateRefreshToken(user.Id, ipAddress);
+
+            // chi luu token ở cookie
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                    "refresh_token",
+                    refreshToken.Token,
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = refreshToken.Expires,
+                    });
+            }
 
             return new AuthResponseDto
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken.Token,
-                Expiry = refreshToken.Expires,
+                Expiry = accessTokenExpiry,
                 User = _mapper.Map<UserDto>(user)
             };
         }

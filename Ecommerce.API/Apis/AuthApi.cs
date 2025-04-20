@@ -54,6 +54,22 @@ namespace Ecommerce.API.Apis
                 return Results.Ok(new { message = "Token revoked" });
             });
 
+            v1.MapPost("/auth/logout", async (HttpContext context, IAuthService authService) =>
+            {
+                var refreshToken = context.Request.Cookies["refresh_token"]; // Không đọc từ body
+
+                //if (string.IsNullOrEmpty(refreshToken))
+                //    return Results.BadRequest("No session found");
+
+                await authService.RevokeTokenAsync(refreshToken);
+
+                context.Response.Cookies.Delete("refresh_token", new CookieOptions
+                {
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+                return Results.Ok();
+            });
 
             return builder;
         }
