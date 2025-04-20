@@ -49,7 +49,7 @@ namespace Ecommerce.API.Apis
             });
 
             //get san pham 
-            v1.MapGet("/products", async ( [FromQuery] string? id,
+            v2.MapGet("/products", async ( [FromQuery] string? id,
                                            [FromQuery] string? slug,
                                            IProductService productService) =>
              {
