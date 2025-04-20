@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
+using ProductQueryParameters = Ecommerce.Infrastructure.Models.ProductQueryParameters;
 
 namespace Ecommerce.API.Services
 {
@@ -131,5 +132,24 @@ namespace Ecommerce.API.Services
             var product = await _productRepository.GetBySlugAsync(slug);
             return product == null ? null : _mapper.Map<ProductDto>(product);
         }
+        public async Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
+            ProductQueryParameters parameters,
+            CancellationToken cancellationToken = default)
+        {
+            var paginatedResponse = await _productRepository.GetAllProductsPaginatedAsync(
+                parameters,
+                cancellationToken
+            );
+
+            var itemDtos = _mapper.Map<IEnumerable<ProductDto>>(paginatedResponse.Items);
+
+            return new PaginationResponse<ProductDto>(
+                paginatedResponse.PageIndex,
+                paginatedResponse.PageSize,
+                paginatedResponse.TotalCount,
+                itemDtos
+            );
+        }
+
     }
 }

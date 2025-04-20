@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 
+using ProductQueryParameters = Ecommerce.Infrastructure.Models.ProductQueryParameters;
+
 namespace Ecommerce.API.Apis
 {
     public static class ProductApi
@@ -101,7 +103,19 @@ namespace Ecommerce.API.Apis
                 return TypedResults.Content(xsrfToken, "text/plain");
             });
 
-            
+            v1.MapGet("/products/page", async (
+                    IProductService service,
+                    [AsParameters] ProductQueryParameters parameters,
+                    CancellationToken cancellationToken = default
+                ) =>
+            {
+                var paginatedResponse = await service.GetAllProductsPaginatedAsync(
+                    parameters,
+                    cancellationToken
+                );
+                return Results.Ok(paginatedResponse);
+            });
+
             return builder;
         }
     }

@@ -1,5 +1,7 @@
 ﻿
 
+using Ecommerce.Infrastructure.Models.Dtos;
+
 namespace Ecommerce.API.Repositories
 {
     public interface IProductRepository
@@ -10,5 +12,9 @@ namespace Ecommerce.API.Repositories
             Task<Product?> UpdateAsync(Guid id, Product product);
             Task<bool> DeleteAsync(Guid id);
             Task<Product?> GetBySlugAsync(string slug);
+            Task<PaginationResponse<Product>> GetAllProductsPaginatedAsync(
+                ProductQueryParameters parameters,
+                CancellationToken cancellationToken = default
+            );
     }
 }

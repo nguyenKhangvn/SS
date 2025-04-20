@@ -3,7 +3,7 @@ namespace Ecommerce.Infrastructure.Models
 {
     public class ProductQueryParameters : PaginationRequest 
     {
-        public object CategoryId;
+        public Guid? CategoryId { get; set; }
 
         public string? SearchTerm { get; set; } // Tìm kiếm theo tên hoặc mô tả
         public string? SortBy { get; set; } // Tên trường để sắp xếp (vd: "name", "price")

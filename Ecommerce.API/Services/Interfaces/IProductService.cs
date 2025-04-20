@@ -1,6 +1,6 @@
 ﻿using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
-using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
+using ProductQueryParameters = Ecommerce.Infrastructure.Models.ProductQueryParameters;
 
 namespace Ecommerce.API.Services.Interfaces
 {
@@ -12,5 +12,10 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ProductDto?> UpdateProductAsync(Guid id, ProductUpdateDto dto);
         Task<bool> DeleteProductAsync(Guid id);
         Task<ProductDto?> GetProductBySlugAsync(string slug);
+
+        Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
+           ProductQueryParameters parameters,
+            CancellationToken cancellationToken = default
+       );
     }
 }
