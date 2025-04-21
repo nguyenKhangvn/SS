@@ -1,6 +1,7 @@
 ﻿
 using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.AspNetCore.Identity;
 using System;
 
 // Triển khai đầy đủ interface
@@ -46,4 +47,5 @@ public class AuthRepository : IAuthRepository
             await _context.SaveChangesAsync();
         }
     }
+
 }

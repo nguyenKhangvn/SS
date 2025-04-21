@@ -12,7 +12,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ProductDto?> UpdateProductAsync(Guid id, ProductUpdateDto dto);
         Task<bool> DeleteProductAsync(Guid id);
         Task<ProductDto?> GetProductBySlugAsync(string slug);
-
         Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
            ProductQueryParameters parameters,
             CancellationToken cancellationToken = default

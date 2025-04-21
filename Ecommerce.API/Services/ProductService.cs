@@ -102,15 +102,64 @@ namespace Ecommerce.API.Services
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<ProductDto?> UpdateProductAsync(Guid id, ProductUpdateDto dto)
+        public async Task<ProductDto?> UpdateProductAsync(Guid id, [FromForm] ProductUpdateDto dto)
         {
+            dto.Slug = GenerateSlug(dto.Name);
             var product = _mapper.Map<Product>(dto);
-            var updated = await _productRepository.UpdateAsync(id, product);
-            if (updated == null)
+            var added = await _productRepository.UpdateAsync(id, product);
+            if (added == null)
             {
                 return null;
             }
-            return _mapper.Map<ProductDto>(updated);
+            if (dto.ImageFile1 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile1);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile2 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile2);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile3 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile3);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile4 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile4);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            return _mapper.Map<ProductDto>(added);
         }
 
         private static string GenerateSlug(string name)

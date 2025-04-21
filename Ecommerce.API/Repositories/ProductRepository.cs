@@ -36,7 +36,12 @@ namespace Ecommerce.API.Repositories
         }
         public async Task<Product?> GetByIdAsync(Guid id, string? include = null)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products
+                 .Include(p => p.Category)
+                            .Include(p => p.Manufacturer)
+                            .Include(p => p.Discount)
+                            .Include(p => p.Images)
+                            .AsQueryable();
             if (!string.IsNullOrWhiteSpace(include))
             {
                 foreach (var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
@@ -82,13 +87,25 @@ namespace Ecommerce.API.Repositories
         }
 
         public async Task<Product?> GetBySlugAsync(string slug)
-            => await _context.Products.FirstOrDefaultAsync(p => p.Slug == slug);
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Manufacturer)
+                .Include(p => p.Discount)
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Slug == slug);
+        }
+
 
         public async Task<PaginationResponse<Product>> GetAllProductsPaginatedAsync(
             ProductQueryParameters parameters,
             CancellationToken cancellationToken = default)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Include(p => p.Category)
+                            .Include(p => p.Manufacturer)
+                            .Include(p => p.Discount)
+                            .Include(p => p.Images)
+                            .AsQueryable();
 
             // Filter
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
@@ -106,7 +123,6 @@ namespace Ecommerce.API.Repositories
             if (parameters.IsActive.HasValue)
                 query = query.Where(p => p.IsActive == parameters.IsActive);
 
-            // Sort
             // Sort
             if (!string.IsNullOrEmpty(parameters.SortBy))
             {

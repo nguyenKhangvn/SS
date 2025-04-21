@@ -34,7 +34,7 @@ namespace Ecommerce.API.Apis
                 var products = await service.GetAllProductAsync(includeProperties);
                 return Results.Ok(products);
             });
-            v1.MapPut("/products/{productId:guid}", async (IProductService service, Guid productId, ProductUpdateDto dto) =>
+            v1.MapPut("/products/{productId:guid}", async (IProductService service, Guid productId, [FromForm] ProductUpdateDto dto) =>
             {
                 if (productId != dto.Id)
                 {
@@ -43,7 +43,8 @@ namespace Ecommerce.API.Apis
 
                 var updated = await service.UpdateProductAsync(productId, dto);
                 return Results.Ok(updated);
-            });
+            }).Accepts<ProductCreateDto>("multipart/form-data")
+             .DisableAntiforgery();
             v1.MapDelete("/products/{productId:guid}", async (IProductService service, Guid productId) =>
             {
                 var success = await service.DeleteProductAsync(productId);
