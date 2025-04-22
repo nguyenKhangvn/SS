@@ -36,7 +36,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
 
     public class ProductUpdateDto : ProductCreateDto
     {
-        public Guid Id { get; set; }
+        //public Guid Id { get; set; }
 
     }
 

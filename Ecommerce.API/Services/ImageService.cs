@@ -44,7 +44,7 @@ namespace Ecommerce.API.Services
             if (file.Length == 0)
                 throw new ArgumentException("File is empty");
 
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
             var extension = Path.GetExtension(file.FileName).ToLower();
 
             if (!allowedExtensions.Contains(extension))
