@@ -53,5 +53,6 @@ app.MapPaymentApi();
 //app.MapChatApi();
 app.MapImageApi();
 app.MapAuthApi();
+app.MapProductStoreInventoryApi();
 app.Run();
 

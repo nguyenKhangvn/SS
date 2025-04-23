@@ -35,7 +35,9 @@ namespace Ecommerce.API.Apis
                 return Results.Ok(products);
             });
 
-            v1.MapPut("/products/{productId:guid}", async (IProductService service, Guid productId, [FromForm] ProductUpdateDto dto) =>
+            v1.MapPost("/products/{productId:guid}", async (IProductService service, 
+                                                            Guid productId, 
+                                                            [FromForm] ProductCreateDto dto) =>
             {
 
                 var updated = await service.UpdateProductAsync(productId, dto);

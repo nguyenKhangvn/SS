@@ -34,9 +34,10 @@ namespace Ecommerce.API.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<ImageDto>> GetImagesByProductIdAsync(Guid productId)
+        public async Task<List<ImageDto>> GetImagesByProductIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            var images = await _imageRepository.GetImagesByProductIdAsync(productId);
+            return _mapper.Map<List<ImageDto>>(images);
         }
 
         public async Task<string> UpdateImageAsync(IFormFile file)

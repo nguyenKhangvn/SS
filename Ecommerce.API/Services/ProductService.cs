@@ -2,8 +2,10 @@
 using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Polly.CircuitBreaker;
 using System.Globalization;
 using System.Net.WebSockets;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 using ProductQueryParameters = Ecommerce.Infrastructure.Models.ProductQueryParameters;
@@ -14,11 +16,18 @@ namespace Ecommerce.API.Services
     {
         private readonly IProductRepository _productRepository;
         private readonly IImageService _imageService;
+        private readonly IProductStoreInventoryService _productStoreInventoryService;
         private readonly IMapper _mapper;
-        public ProductService(IProductRepository productRepository, IImageService imageService, IMapper mapper)
+        public ProductService(
+            IProductRepository productRepository, 
+            IImageService imageService,
+            IProductStoreInventoryService productStoreInventoryService,
+            IMapper mapper
+        )
         {
             _productRepository = productRepository;
             _imageService = imageService;
+            _productStoreInventoryService = productStoreInventoryService;
             _mapper = mapper;
         }
 
@@ -77,8 +86,19 @@ namespace Ecommerce.API.Services
                 };
                 await _imageService.AddImageAsync(image);
             }
+            // add quantity
+            if (dto.Quantity != null && dto.StoreId != null)
+            {
+                var inventoryDto = new AddOrUpdateProductStoreInventoryDto
+                {
+                    ProductId = added.Id, 
+                    StoreLocationId = dto.StoreId,
+                    Quantity = dto.Quantity
+                };
+                await _productStoreInventoryService.AddAsync(inventoryDto);
+            }
 
-            return _mapper.Map<ProductDto>(added);
+            return _mapper.Map<ProductDto>(product);
         }
 
         public async Task<bool> DeleteProductAsync(Guid id)
@@ -99,68 +119,105 @@ namespace Ecommerce.API.Services
             {
                 return null;
             }
+
             return _mapper.Map<ProductDto>(product);
         }
 
-        public async Task<ProductDto?> UpdateProductAsync(Guid id, [FromForm] ProductUpdateDto dto)
+
+        public async Task<ProductDto?> UpdateProductAsync(Guid id, [FromForm] ProductCreateDto dto)
         {
-            dto.Slug = GenerateSlug(dto.Name);
-            var product = _mapper.Map<Product>(dto);
-            var added = await _productRepository.UpdateAsync(id, product);
-            if (added == null)
+            // 1. Lấy sản phẩm hiện tại từ database
+            var existingProduct = await _productRepository.GetByIdAsync(id);
+            if (existingProduct == null)
             {
                 return null;
             }
-            if (dto.ImageFile1 != null)
+
+            // 2. Cập nhật thông tin cơ bản
+            dto.Slug = GenerateSlug(dto.Name);
+            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct thay vì tạo mới
+
+            // 3. Cập nhật sản phẩm trong database
+            var updatedProduct = await _productRepository.UpdateAsync(id, existingProduct);
+            if (updatedProduct == null)
             {
-                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile1);
-                var image = new ImageDto
-                {
-                    ProductId = added.Id,
-                    Url = imageUrl,
-                    AltText = $"Ảnh minh họa {added.Name}",
-                    DisplayOrder = 0
-                };
-                await _imageService.AddImageAsync(image);
+                return null;
             }
-            if (dto.ImageFile2 != null)
-            {
-                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile2);
-                var image = new ImageDto
-                {
-                    ProductId = added.Id,
-                    Url = imageUrl,
-                    AltText = $"Ảnh minh họa {added.Name}",
-                    DisplayOrder = 0
-                };
-                await _imageService.AddImageAsync(image);
-            }
-            if (dto.ImageFile3 != null)
-            {
-                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile3);
-                var image = new ImageDto
-                {
-                    ProductId = added.Id,
-                    Url = imageUrl,
-                    AltText = $"Ảnh minh họa {added.Name}",
-                    DisplayOrder = 0
-                };
-                await _imageService.AddImageAsync(image);
-            }
-            if (dto.ImageFile4 != null)
-            {
-                var imageUrl = await _imageService.UpdateImageAsync(dto.ImageFile4);
-                var image = new ImageDto
-                {
-                    ProductId = added.Id,
-                    Url = imageUrl,
-                    AltText = $"Ảnh minh họa {added.Name}",
-                    DisplayOrder = 0
-                };
-                await _imageService.AddImageAsync(image);
-            }
-            return _mapper.Map<ProductDto>(added);
+
+            // 4. Xử lý ảnh
+            await ProcessProductImages(dto, updatedProduct.Id, updatedProduct.Name);
+
+            // 5. Cập nhật inventory nếu có thay đổi
+            await UpdateInventoryIfChanged(updatedProduct.Id, dto.StoreId, dto.Quantity);
+
+            // 6. Trả về sản phẩm đã cập nhật
+            return await GetFullProductDto(updatedProduct.Id);
         }
+
+        private async Task ProcessProductImages(ProductCreateDto dto, Guid productId, string productName)
+        {
+            // Xử lý ảnh mới
+            var imageFiles = new[] { dto.ImageFile1, dto.ImageFile2, dto.ImageFile3, dto.ImageFile4 }
+                .Where(f => f != null)
+                .ToList();
+
+            foreach (var imageFile in imageFiles)
+            {
+                var imageUrl = await _imageService.UpdateImageAsync(imageFile);
+                var image = new ImageDto
+                {
+                    ProductId = productId,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {productName}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+
+            // Xử lý ảnh bị xóa (nếu có)
+            //if (dto.DeletedImageIds != null && dto.DeletedImageIds.Any())
+            //{
+            //    foreach (var imageId in dto.DeletedImageIds)
+            //    {
+            //        await _imageService.DeleteImageAsync(imageId);
+            //    }
+            //}
+        }
+
+        private async Task UpdateInventoryIfChanged(Guid productId, Guid? storeId, int? quantity)
+        {
+            if (storeId == null || quantity == null) return;
+
+            var existingInventory = await _productStoreInventoryService.GetByProductAndStoreAsync(productId, storeId.Value);
+
+            if (existingInventory == null)
+            {
+                // Nếu chưa có inventory, tạo mới
+                var inventoryDto = new AddOrUpdateProductStoreInventoryDto
+                {
+                    ProductId = productId,
+                    StoreLocationId = storeId.Value,
+                    Quantity = quantity.Value
+                };
+                await _productStoreInventoryService.AddAsync(inventoryDto);
+            }
+            else if (existingInventory.Quantity != quantity.Value)
+            {
+                // Nếu có inventory và số lượng thay đổi, cập nhật
+                await _productStoreInventoryService.UpdateQuantityAsync(productId, storeId.Value, quantity.Value);
+            }
+        }
+
+        private async Task<ProductDto> GetFullProductDto(Guid productId)
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+            var productDto = _mapper.Map<ProductDto>(product);
+
+            // Lấy danh sách ảnh hiện tại của sản phẩm
+            productDto.Images = await _imageService.GetImagesByProductIdAsync(productId);
+            return productDto;
+        }
+
 
         private static string GenerateSlug(string name)
         {

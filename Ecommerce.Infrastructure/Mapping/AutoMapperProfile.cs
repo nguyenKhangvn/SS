@@ -15,6 +15,7 @@ namespace Ecommerce.Infrastructure.Mapping
             CreateMap<CreateCategoryDto, Category>().ReverseMap();
             // store location
             CreateMap<StoreLocationDto, StoreLocation>().ReverseMap();
+            //post
             CreateMap<PostDto, Post>().ReverseMap();
             // user
             CreateMap<UserCreateDto, User>().ReverseMap();
@@ -43,6 +44,13 @@ namespace Ecommerce.Infrastructure.Mapping
             //image
             CreateMap<Image, ImageDto>().ReverseMap();
 
+            //product store inventory
+            CreateMap<ProductStoreInventoryDto, ProductStoreInventory>();
+            CreateMap<ProductStoreInventory, ProductStoreInventoryDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.StoreLocation.Name));
+
+            CreateMap<AddOrUpdateProductStoreInventoryDto, ProductStoreInventory>().ReverseMap();
         }
     }
 }

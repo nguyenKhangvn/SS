@@ -66,7 +66,9 @@ namespace Ecommerce.API.Extention
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAuthService, AuthService>();
-
+            // product store inventory
+            services.AddScoped<IProductStoreInventoryRepository, ProductStoreInventoryRepository>();
+            services.AddScoped<IProductStoreInventoryService, ProductStoreInventoryService>();
             return services;
         }
     }
