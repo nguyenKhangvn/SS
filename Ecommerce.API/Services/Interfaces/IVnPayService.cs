@@ -6,5 +6,8 @@ namespace Ecommerce.API.Services.Interfaces
     {
         string CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
         VnPaymentResponseModel ProcessPaymentResponse(IQueryCollection collections);
+        // Xử lý phản hồi từ VNPay
+        Task<PaymentVerificationResult> VerifyVnPayPaymentAsync(Dictionary<string, string> vnpParams);
+
     }
 }
