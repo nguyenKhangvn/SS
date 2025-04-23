@@ -46,6 +46,11 @@ namespace Ecommerce.API.Apis
                 return Results.Ok();
             });
 
+            v1.MapGet("/order/{userId:guid}/history", async (Guid userId, IOrderService service) =>
+            {
+                var result = await service.GetAllByUserId(userId);
+                return result == null ? Results.NotFound() : Results.Ok(result);
+            });
             return builder;
         }
     }

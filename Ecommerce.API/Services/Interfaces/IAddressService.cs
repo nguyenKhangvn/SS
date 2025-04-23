@@ -9,5 +9,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task<AddressDto> CreateAsync(AddressDto dto);
         Task<AddressDto?> UpdateAsync(AddressDto dto);
         Task<bool> DeleteAsync(Guid id);
+        Task<AddressDto> SetDefaultAddress(Guid id);
     }
 }

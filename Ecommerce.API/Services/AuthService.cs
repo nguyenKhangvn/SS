@@ -56,7 +56,7 @@ namespace Ecommerce.API.Services
 
             // tao token
             var accessToken = _tokenService.GenerateJwtToken(user);
-            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(15);
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(1440);
 
             var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var refreshToken = await CreateRefreshToken(user.Id, ipAddress);
@@ -71,8 +71,9 @@ namespace Ecommerce.API.Services
                     {
                         HttpOnly = true,
                         Secure = true,
-                        SameSite = SameSiteMode.Strict,
+                        SameSite = SameSiteMode.Lax,
                         Expires = refreshToken.Expires,
+                        Path = "/"
                     });
             }
 

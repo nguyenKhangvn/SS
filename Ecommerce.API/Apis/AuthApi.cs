@@ -1,5 +1,8 @@
 ﻿using Ecommerce.Infrastructure.Models.Dtos;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
+using System;
 using static Ecommerce.Infrastructure.Models.Dtos.AuthDto;
 
 namespace Ecommerce.API.Apis
@@ -69,6 +72,91 @@ namespace Ecommerce.API.Apis
                     SameSite = SameSiteMode.Strict
                 });
                 return Results.Ok();
+            });
+            // [POST] http://localhost:5000/api/v1/ecommerce/auth/refresh-token
+            v1.MapPost("/auth/refresh-token", async (HttpContext context, IAuthService service) =>
+            {
+                try
+                {
+                    // 1. Lấy refresh token từ cookie
+                    var refreshTokenFromCookie = context.Request.Cookies["refresh_token"];
+                    if (string.IsNullOrEmpty(refreshTokenFromCookie))
+                    {
+                        context.Response.Cookies.Delete("refresh_token");
+                        return Results.Unauthorized();
+                    }
+
+                    // 2. Đọc access token từ body request
+                    var requestDto = await context.Request.ReadFromJsonAsync<RefreshTokenRequestDto>();
+                    if (requestDto == null || string.IsNullOrEmpty(requestDto.AccessToken))
+                    {
+                        return Results.BadRequest("Access token is required in request body");
+                    }
+
+                    // 3. Tạo DTO để gọi service (kết hợp token từ cookie và body)
+                    var refreshRequest = new RefreshTokenRequestDto
+                    {
+                        AccessToken = requestDto.AccessToken,
+                        RefreshToken = refreshTokenFromCookie
+                    };
+
+                    // 4. Gọi service xử lý nghiệp vụ
+                    var authResponse = await service.RefreshTokenAsync(refreshRequest);
+
+                    // 5. Cập nhật cookie với refresh token mới
+                    context.Response.Cookies.Append(
+                        "refresh_token",
+                        authResponse.RefreshToken,
+                        new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = authResponse.Expiry, // Sử dụng thời gian hết hạn từ service
+                            Path = "/"
+                        });
+
+                    // 6. Trả về response (không bao gồm refresh token trong body)
+                    var responseToClient = new
+                    {
+                        AccessToken = authResponse.AccessToken,
+                        Expiry = authResponse.Expiry,
+                        User = authResponse.User
+                    };
+
+                    return Results.Ok(responseToClient);
+                }
+                catch (SecurityTokenException ex)
+                {
+                    context.Response.Cookies.Delete("refresh_token");
+                    return Results.Unauthorized();
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi ở đây nếu cần
+                    return Results.Problem(
+                        detail: "An unexpected error occurred",
+                        statusCode: StatusCodes.Status500InternalServerError);
+                }
+            });
+            //validate token
+            v1.MapGet("/auth/validate-token", (HttpContext context, ITokenService tokenService) =>
+            {
+                var authorizationHeader = context.Request.Headers["Authorization"].ToString();
+                if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+                {
+                    return Results.Unauthorized();
+                }
+
+                var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+                var principal = tokenService.ValidateToken(token);
+
+                if (principal == null)
+                {
+                    return Results.Unauthorized();
+                }
+
+                return Results.Ok(new { message = "Token is valid" });
             });
 
             return builder;

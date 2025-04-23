@@ -8,5 +8,6 @@
         Task<Order> UpdateAsync(Order order);
         Task<bool> DeleteAsync(Guid id);
         Task<Order?> UpdateStatusAsync(Guid id, string Status);
+        Task<IEnumerable<Order>> GetAllByUserId(Guid id);
     }
 }

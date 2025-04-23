@@ -37,6 +37,12 @@ namespace Ecommerce.API.Apis
                 var deleted = await service.DeleteAsync(id);
                 return deleted ? Results.Ok() : Results.NotFound();
             });
+
+            v1.MapPut("/address/{id:guid}/set-default", async (Guid id, [FromServices] IAddressService service) =>
+            {
+                var setDefault = await service.SetDefaultAddress(id);
+                return setDefault != null ? Results.Ok() : Results.NotFound();
+            });
             return builder;
         }
     }

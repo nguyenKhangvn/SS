@@ -40,6 +40,13 @@ namespace Ecommerce.API.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<Address> SetDefaultAddress(Address address)
+        {
+            _context.Addresses.Update(address);
+            await _context.SaveChangesAsync();
+            return address;
+        }
+
         public async  Task<Address> UpdateAsync(Address address)
         {
             _context.Addresses.Update(address);
