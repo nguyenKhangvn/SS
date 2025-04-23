@@ -44,5 +44,13 @@ namespace Ecommerce.API.Services
         {
             return await _addressRepository.DeleteAsync(id);
         }
+
+        public async Task<AddressDto> SetDefaultAddress(Guid id)
+        {
+            var update = await _addressRepository.GetByIdAsync(id);
+            update.IsDefaultShipping = true;
+            var edited = await _addressRepository.SetDefaultAddress(update);
+            return _mapper.Map<AddressDto>(edited);
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task<OrderDto> UpdateAsync(OrderDto dto);
         Task<bool> DeleteAsync(Guid id);
         Task<OrderDto?> UpdateStatusAsync(Guid id, string status);
+        Task<IEnumerable<OrderDto>> GetAllByUserId(Guid id);
     }
 }

@@ -7,5 +7,6 @@
         Task<Address> CreateAsync(Address address);
         Task<Address> UpdateAsync(Address address);
         Task<bool> DeleteAsync(Guid id);
+        Task<Address> SetDefaultAddress(Address address);
     }
 }

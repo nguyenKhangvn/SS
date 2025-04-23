@@ -66,5 +66,13 @@ namespace Ecommerce.API.Repositories
             return existingOrder;
         }
 
+        public async Task<IEnumerable<Order>> GetAllByUserId(Guid id)
+        {
+            var userOrders = await _context.Orders.Include(order => order.OrderItems)
+                                       .Where(order => order.UserId == id)
+                                       .ToListAsync();
+            return userOrders;
+
+        }
     }
 }

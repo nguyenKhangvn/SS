@@ -114,6 +114,12 @@ namespace Ecommerce.API.Services
             var updatedOrder = await _orderRepository.UpdateStatusAsync(id, Status);
             return updatedOrder == null ? null : _mapper.Map<OrderDto>(updatedOrder);
         }
+
+        public async Task<IEnumerable<OrderDto>> GetAllByUserId(Guid id)
+        {
+            var result = await _orderRepository.GetAllByUserId(id);
+            return _mapper.Map<IEnumerable<OrderDto>>(result);
+        }
     }
 
 

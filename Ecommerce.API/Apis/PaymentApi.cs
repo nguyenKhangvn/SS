@@ -10,7 +10,7 @@ namespace Ecommerce.API.Apis
             var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
 
             // Tạo URL thanh toán VNPay
-            v1.MapPost("/payment/create", (
+            v1.MapPost("/payment/vnpay/", (
                 HttpContext context,
                 IVnPayService vnPayService,
                 VnPaymentRequestModel model
