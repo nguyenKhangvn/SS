@@ -17,7 +17,7 @@ namespace Ecommerce.Infrastructure.ExternalServices.Payment.VnPay
         public string Token { get; set; }
         public string VnPayResponseCode { get; set; }
     }
-    public class VnPaymentRequestModel 
+    public class VnPaymentRequestModel
     {
         public string OrderCode { get; set; }
         public string FullName { get; set; }
@@ -25,4 +25,19 @@ namespace Ecommerce.Infrastructure.ExternalServices.Payment.VnPay
         public double Amount { get; set; }
         public DateTime CreatedDate { get; set; }
     }
+    public class PaymentVerificationResult
+    {
+        public bool IsSuccess { get; set; }
+    }
+
+    public class VnPayCallbackRequest
+    {
+        public string vnp_TxnRef { get; set; } = string.Empty;
+        public string vnp_ResponseCode { get; set; } = string.Empty;
+        public string vnp_TransactionNo { get; set; } = string.Empty;
+        public string vnp_CardType { get; set; } = string.Empty;
+        public string vnp_OrderInfo { get; set; } = string.Empty;
+        // Thêm các trường khác nếu cần
+    }
+
 }

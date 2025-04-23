@@ -47,6 +47,26 @@ namespace Ecommerce.API.Apis
                 return Results.Json(response);
             });
 
+            v1.MapPost("/payments/vnpay/verify", async (
+                [FromBody] Dictionary<string, string> vnpParams,
+                IVnPayService vnPayService) =>
+            {
+                try
+                {
+                    var result = await vnPayService.VerifyVnPayPaymentAsync(vnpParams);
+                    return Results.Ok(new
+                    {
+                        success = result.IsSuccess
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem($"Xác thực thất bại: {ex.Message}");
+                }
+            });
+
+
+
 
             return builder;
         }

@@ -75,5 +75,28 @@ namespace Ecommerce.API.Services
                 VnPayResponseCode = vnp_ResponseCode
             };
         }
+        public async Task<PaymentVerificationResult> VerifyVnPayPaymentAsync(Dictionary<string, string> vnpParams)
+        {
+            // TODO: lấy các thông tin cần thiết để xác thực chữ ký (signature)
+            string vnp_SecureHash = vnpParams["vnp_SecureHash"];
+            vnpParams.Remove("vnp_SecureHash");
+            vnpParams.Remove("vnp_SecureHashType");
+
+            // Sắp xếp lại key theo thứ tự alphabet
+            var sortedParams = vnpParams.OrderBy(x => x.Key);
+
+            var signData = string.Join("&", sortedParams.Select(kv => $"{kv.Key}={kv.Value}"));
+            var hashSecret = _config["VnPay:HashSecret"]; // lấy từ appsettings.json
+
+            string computedHash = Utils.HmacSHA512(hashSecret, signData);
+
+            bool isSuccess = vnp_SecureHash.Equals(computedHash, StringComparison.OrdinalIgnoreCase)
+                             && vnpParams["vnp_ResponseCode"] == "00";
+
+            return new PaymentVerificationResult
+            {
+                IsSuccess = isSuccess
+            };
+        }
     }
 }

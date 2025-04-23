@@ -24,7 +24,7 @@ builder.AddProject<Projects.Ecommerce_API>("ecommerce-api")
      .WithEnvironment("VnPay__Command", "pay")
      .WithEnvironment("VnPay__CurrCode", "VND")
      .WithEnvironment("VnPay__Locale", "vn")
-     .WithEnvironment("VnPay__ReturnUrl", "https://localhost:7074/Cart/PaymentCallBack")
+     .WithEnvironment("VnPay__ReturnUrl", "http://localhost:5173/orders/payment/response")
      .WithEnvironment("TimeZoneId", "SE Asia Standard Time")
      .WithEnvironment("ConnectionStrings__DefaultConnection", "Host=interchange.proxy.rlwy.net;Port=36251;Database=railway;Username=postgres;Password=RSXCNtCPkscFmrKSYCDRbjAvKtNsikAZ")
      .WaitForCompletion(migrationService);
