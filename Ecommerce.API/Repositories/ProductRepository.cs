@@ -22,6 +22,8 @@ namespace Ecommerce.API.Repositories
                             .Include(p => p.Manufacturer)
                             .Include(p => p.Discount)
                             .Include(p => p.Images)
+                            .Include(p => p.StoreInventories)
+                                .ThenInclude(si => si.StoreLocation)
                             .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(include))
@@ -41,6 +43,8 @@ namespace Ecommerce.API.Repositories
                             .Include(p => p.Manufacturer)
                             .Include(p => p.Discount)
                             .Include(p => p.Images)
+                            .Include(p => p.StoreInventories)
+                                .ThenInclude(si => si.StoreLocation)
                             .AsQueryable();
             if (!string.IsNullOrWhiteSpace(include))
             {

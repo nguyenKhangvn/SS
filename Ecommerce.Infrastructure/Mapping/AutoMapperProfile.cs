@@ -30,11 +30,13 @@ namespace Ecommerce.Infrastructure.Mapping
             CreateMap<OrderItemDto, OrderItem>();
             CreateMap<Coupon, CouponDto>().ReverseMap();
             //product
-            CreateMap<Product, ProductDto>();
-                // .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
-                //.ForMember(dest => dest.ManufacturerName, opt => opt.MapFrom(src => src.Manufacturer.Name))
-                //.ForMember(dest => dest.DiscountName, opt => opt.MapFrom(src => src.Discount != null ? src.Discount.Name : null));
+            CreateMap<Product, ProductDto>().ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.StoreInventories.Sum(si => si.Quantity)))
+            .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.StoreInventories.FirstOrDefault().StoreLocation.Name));
+            // .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+            //.ForMember(dest => dest.ManufacturerName, opt => opt.MapFrom(src => src.Manufacturer.Name))
+            //.ForMember(dest => dest.DiscountName, opt => opt.MapFrom(src => src.Discount != null ? src.Discount.Name : null));
             CreateMap<ProductDto, Product>();
+                
             CreateMap<ProductCreateDto, Product>().ReverseMap();
             CreateMap<ProductUpdateDto, Product>().ReverseMap();
 
