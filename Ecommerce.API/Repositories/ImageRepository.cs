@@ -30,9 +30,11 @@ namespace Ecommerce.API.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<List<Image>> GetImagesByProductIdAsync(Guid productId)
+        public async Task<List<Image>> GetImagesByProductIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            return await _context.Images
+                         .Where(i => i.ProductId == productId)
+                         .ToListAsync();
         }
 
         public Task<Image> UpdateImageAsync(Image image)

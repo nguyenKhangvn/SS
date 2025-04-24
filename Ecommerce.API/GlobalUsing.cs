@@ -8,3 +8,6 @@ global using Ecommerce.Infrastructure.Mapping;
 global using Microsoft.AspNetCore.Mvc;
 global using AutoMapper;
 global using Microsoft.EntityFrameworkCore;
+global using Ecommerce.API.Bootstraping;
+global using Ecommerce.API.Extention;
+global using Ecommerce.API.Apis;

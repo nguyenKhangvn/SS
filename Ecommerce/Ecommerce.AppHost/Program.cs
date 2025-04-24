@@ -1,4 +1,7 @@
+using Aspire.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 var postgres = builder.AddPostgres("postgres")
             .WithImageTag("latest")
@@ -9,27 +12,24 @@ var postgres = builder.AddPostgres("postgres")
 var ecommerceDb = postgres.AddDatabase("ecommerce-dbct", "ecommerce");
 
 var migrationService = builder.AddProject<Projects.Ecommerce_MigrationService>("ecommerce-migrationservice")
-                         //.WithReference(ecommerceDb)
-                        .WithEnvironment("ConnectionStrings__DefaultConnection", "Host=interchange.proxy.rlwy.net;Port=36251;Database=railway;Username=postgres;Password=RSXCNtCPkscFmrKSYCDRbjAvKtNsikAZ")
+                        //.WithReference(ecommerceDb)
+                        .WithEnvironment("ConnectionStrings__DefaultConnection", configuration["ConnectionStrings:DefaultConnection"])
                         .WaitFor(ecommerceDb);
 
-
 builder.AddProject<Projects.Ecommerce_API>("ecommerce-api")
-     //.WithReference(ecommerceDb)
-     //.WaitFor(postgres)
-     .WithEnvironment("VnPay__TmnCode", "4RDRDK85")
-     .WithEnvironment("VnPay__HashSecret", "YOUQN1ZD393OLJ6C4GAQKSD2UUS2MRPQ")
-     .WithEnvironment("VnPay__BaseUrl", "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html")
-     .WithEnvironment("VnPay__Version", "2.1.0")
-     .WithEnvironment("VnPay__Command", "pay")
-     .WithEnvironment("VnPay__CurrCode", "VND")
-     .WithEnvironment("VnPay__Locale", "vn")
-     .WithEnvironment("VnPay__ReturnUrl", "http://localhost:5173/orders/payment/response")
-     .WithEnvironment("TimeZoneId", "SE Asia Standard Time")
-     .WithEnvironment("ConnectionStrings__DefaultConnection", "Host=interchange.proxy.rlwy.net;Port=36251;Database=railway;Username=postgres;Password=RSXCNtCPkscFmrKSYCDRbjAvKtNsikAZ")
-     .WaitForCompletion(migrationService);
+    //.WithReference(ecommerceDb)
+    //.WaitFor(postgres)
+    .WithEnvironment("VnPay__TmnCode", configuration["VnPay:TmnCode"])
+    .WithEnvironment("VnPay__HashSecret", configuration["VnPay:HashSecret"])
+    .WithEnvironment("VnPay__BaseUrl", configuration["VnPay:BaseUrl"])
+    .WithEnvironment("VnPay__Version", configuration["VnPay:Version"])
+    .WithEnvironment("VnPay__Command", configuration["VnPay:Command"])
+    .WithEnvironment("VnPay__CurrCode", configuration["VnPay:CurrCode"])
+    .WithEnvironment("VnPay__Locale", configuration["VnPay:Locale"])
+    .WithEnvironment("VnPay__ReturnUrl", configuration["VnPay:ReturnUrl"])
+    .WithEnvironment("VnPay__TimeZoneId", configuration["VnPay:TimeZoneId"])
+    .WithEnvironment("ConnectionStrings__DefaultConnection", configuration["ConnectionStrings:DefaultConnection"])
+    .WaitForCompletion(migrationService);
 ;
-
-
 
 builder.Build().Run();
