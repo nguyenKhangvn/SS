@@ -221,6 +221,8 @@ namespace Ecommerce.API.Services
 
         private static string GenerateSlug(string name)
         {
+            name = name.Replace("đ", "d").Replace("Đ", "D");
+
             string normalized = name.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD);
             var slug = new string(normalized
                 .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
