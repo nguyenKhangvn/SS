@@ -81,7 +81,7 @@ namespace Ecommerce.API.Services
 
             var orderEntity = new Order
             {
-                OrderCode = $"ORD-{DateTime.UtcNow.Ticks}",
+                OrderCode = dto.OrderCode,
                 UserId = dto.UserId,
                 ShippingAddressId = dto.ShippingAddressId,
                 BillingAddressId = dto.BillingAddressId,
@@ -119,6 +119,16 @@ namespace Ecommerce.API.Services
         {
             var result = await _orderRepository.GetAllByUserId(id);
             return _mapper.Map<IEnumerable<OrderDto>>(result);
+        }
+
+        public async Task<OrderDto> GetOrderByOrderCode(string orderCode)
+        {
+            var order = await _orderRepository.GetOrderByOrderCode(orderCode);
+            if (order == null)
+            {
+                throw new Exception($"Order with code {orderCode} not found.");
+            }
+            return _mapper.Map<OrderDto>(order);
         }
     }
 
