@@ -13,7 +13,6 @@ namespace Ecommerce.API.Extention
             //mapper
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
 
-
             //service
             // category
             services.AddScoped<ICategoryRepository, CategoryRepository>();
