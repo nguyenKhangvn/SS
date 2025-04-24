@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Repositories
 {
@@ -73,6 +74,12 @@ namespace Ecommerce.API.Repositories
                                        .ToListAsync();
             return userOrders;
 
+        }
+
+        public async Task<Order> GetOrderByOrderCode(string orderCode)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(ord => ord.OrderCode == orderCode);
+            return order ?? throw new InvalidOperationException("Order not found.");
         }
     }
 }

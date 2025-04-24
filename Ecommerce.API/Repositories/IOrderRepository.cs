@@ -1,4 +1,6 @@
-﻿namespace Ecommerce.API.Repositories
+﻿using Ecommerce.Infrastructure.Models.Dtos;
+
+namespace Ecommerce.API.Repositories
 {
     public interface IOrderRepository
     {
@@ -9,5 +11,6 @@
         Task<bool> DeleteAsync(Guid id);
         Task<Order?> UpdateStatusAsync(Guid id, string Status);
         Task<IEnumerable<Order>> GetAllByUserId(Guid id);
+        Task<Order> GetOrderByOrderCode(string orderCode);
     }
 }

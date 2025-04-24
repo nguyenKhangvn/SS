@@ -9,6 +9,7 @@ namespace Ecommerce.API.Apis
         {
             var vApi = builder.NewVersionedApi("ecommerce");
             var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0);
 
             v1.MapPost("/order", (IOrderService orderService, OrderDto order) => orderService.CreateAsync(order));
             v1.MapGet("/order/{orderId:guid}", async (IOrderService service, Guid orderId) =>
@@ -51,6 +52,18 @@ namespace Ecommerce.API.Apis
                 var result = await service.GetAllByUserId(userId);
                 return result == null ? Results.NotFound() : Results.Ok(result);
             });
+
+            v2.MapGet("/order/{orderCode}", async (IOrderService service, string orderCode) =>
+            {
+                var updated = await service.GetOrderByOrderCode(orderCode);
+                if (updated == null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(updated);
+            });
+
+
             return builder;
         }
     }
