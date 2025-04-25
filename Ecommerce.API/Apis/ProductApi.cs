@@ -104,18 +104,49 @@ namespace Ecommerce.API.Apis
                 return TypedResults.Content(xsrfToken, "text/plain");
             });
 
-            v1.MapGet("/products/page", async (
-                    IProductService service,
-                    [AsParameters] ProductQueryParameters parameters,
-                    CancellationToken cancellationToken = default
-                ) =>
+            v1.MapGet("/products/page", static async (HttpContext context,
+                 IProductService service,
+                 CancellationToken cancellationToken = default
+             ) =>
             {
+                // Debug: Print out all query parameters
+                foreach (var param in context.Request.Query)
+                {
+                    Console.WriteLine($"Parameter: {param.Key}, Value: {param.Value}");
+                }
+
+                var parameters = new ProductQueryParameters(
+                    pageSize: context.Request.Query.TryGetValue("pageSize", out var ps) ? int.Parse(ps) : 10,
+                    pageIndex: context.Request.Query.TryGetValue("pageIndex", out var pi) ? int.Parse(pi) : 1
+                )
+                {
+                    CategoryId = context.Request.Query.TryGetValue("CategoryId", out var catId) ? Guid.Parse(catId) : null,
+                    SearchTerm = context.Request.Query.TryGetValue("SearchTerm", out var search) ? search.ToString() : null,
+                    Include = context.Request.Query.TryGetValue("Include", out var include) ? include.ToString() : null,
+                    MinPrice = context.Request.Query.TryGetValue("MinPrice", out var min) && !string.IsNullOrEmpty(min) ? decimal.Parse(min) : null,
+                    MaxPrice = context.Request.Query.TryGetValue("MaxPrice", out var max) && !string.IsNullOrEmpty(max) ? decimal.Parse(max) : null,
+                    SortBy = context.Request.Query.TryGetValue("SortBy", out var sort) ? sort.ToString() : null,
+                    SortOrder = context.Request.Query.TryGetValue("SortOrder", out var order) ? order.ToString() : "asc",
+                    IsActive = context.Request.Query.TryGetValue("IsActive", out var active) ? bool.Parse(active) : null
+                };
+
                 var paginatedResponse = await service.GetAllProductsPaginatedAsync(
                     parameters,
                     cancellationToken
                 );
+
                 return Results.Ok(paginatedResponse);
             });
+            //add product
+            v2.MapPost("/products/{productId:guid}", async (IProductService service,
+                                                           Guid productId,
+                                                           [FromForm] ProductCreateDto dto) =>
+            {
+
+                var updated = await service.UpdateProductAsyncToCloud(productId, dto);
+                return Results.Ok(updated);
+            }).Accepts<ProductCreateDto>("multipart/form-data")
+            .DisableAntiforgery();
 
             return builder;
         }

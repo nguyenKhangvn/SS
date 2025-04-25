@@ -68,6 +68,10 @@ namespace Ecommerce.API.Extention
             // product store inventory
             services.AddScoped<IProductStoreInventoryRepository, ProductStoreInventoryRepository>();
             services.AddScoped<IProductStoreInventoryService, ProductStoreInventoryService>();
+
+            //cloud for img
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
+
             return services;
         }
     }
