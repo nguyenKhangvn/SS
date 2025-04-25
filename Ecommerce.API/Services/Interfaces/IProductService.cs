@@ -10,6 +10,8 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ProductDto?> GetProductByIdAsync(Guid id, string? includeProperties = null);
         Task<ProductDto> AddProductAsync(ProductCreateDto dto);
         Task<ProductDto?> UpdateProductAsync(Guid id, ProductCreateDto dto);
+        Task<ProductDto?> UpdateProductAsyncToCloud(Guid id, ProductCreateDto dto);
+
         Task<bool> DeleteProductAsync(Guid id);
         Task<ProductDto?> GetProductBySlugAsync(string slug);
         Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(

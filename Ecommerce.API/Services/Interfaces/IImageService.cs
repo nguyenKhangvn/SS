@@ -8,7 +8,8 @@ namespace Ecommerce.API.Services.Interfaces
         Task<List<ImageDto>> GetImagesByProductIdAsync(Guid productId);
         Task<ImageDto> AddImageAsync(ImageDto image);
         Task<string> UpdateImageAsync(IFormFile image);
-        Task<bool> DeleteImageAsync(Guid id);
+        Task<bool> DeleteImageAsync(Guid id);   
         Task<List<ImageDto>> GetAllImagesAsync();
+        Task<string> UpdateImageToCloudAsync(IFormFile image);
     }
 }

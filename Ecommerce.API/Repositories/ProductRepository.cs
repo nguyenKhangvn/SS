@@ -97,19 +97,23 @@ namespace Ecommerce.API.Repositories
                 .Include(p => p.Manufacturer)
                 .Include(p => p.Discount)
                 .Include(p => p.Images)
+                .Include(p => p.StoreInventories)
+                      .ThenInclude(si => si.StoreLocation)
                 .FirstOrDefaultAsync(p => p.Slug == slug);
         }
 
 
         public async Task<PaginationResponse<Product>> GetAllProductsPaginatedAsync(
-            ProductQueryParameters parameters,
-            CancellationToken cancellationToken = default)
+                    ProductQueryParameters parameters,
+                    CancellationToken cancellationToken = default)
         {
             var query = _context.Products.Include(p => p.Category)
-                            .Include(p => p.Manufacturer)
-                            .Include(p => p.Discount)
-                            .Include(p => p.Images)
-                            .AsQueryable();
+                        .Include(p => p.Manufacturer)
+                        .Include(p => p.Discount)
+                        .Include(p => p.Images)
+                        .Include(p => p.StoreInventories)
+                            .ThenInclude(si => si.StoreLocation)
+                        .AsQueryable();
 
             // Filter
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
@@ -144,10 +148,10 @@ namespace Ecommerce.API.Repositories
                 }
             }
 
-            // Include
-            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            // Include custom relationships (if needed)
+            if (!string.IsNullOrEmpty(parameters.Include))
             {
-                foreach (var prop in parameters.SearchTerm.Split(','))
+                foreach (var prop in parameters.Include.Split(','))
                 {
                     query = query.Include(prop.Trim());
                 }
@@ -168,4 +172,5 @@ namespace Ecommerce.API.Repositories
             );
         }
     }
-}
+    }
+

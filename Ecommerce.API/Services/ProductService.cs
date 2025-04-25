@@ -183,6 +183,66 @@ namespace Ecommerce.API.Services
             //    }
             //}
         }
+        //cloud img
+        public async Task<ProductDto?> UpdateProductAsyncToCloud(Guid id, [FromForm] ProductCreateDto dto)
+        {
+            // 1. Lấy sản phẩm hiện tại từ database
+            var existingProduct = await _productRepository.GetByIdAsync(id);
+            if (existingProduct == null)
+            {
+                return null;
+            }
+
+            // 2. Cập nhật thông tin cơ bản
+            dto.Slug = GenerateSlug(dto.Name);
+            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct thay vì tạo mới
+
+            // 3. Cập nhật sản phẩm trong database
+            var updatedProduct = await _productRepository.UpdateAsync(id, existingProduct);
+            if (updatedProduct == null)
+            {
+                return null;
+            }
+
+            // 4. Xử lý ảnh
+            await ProcessProductImagesToCloud(dto, updatedProduct.Id, updatedProduct.Name);
+
+            // 5. Cập nhật inventory nếu có thay đổi
+            await UpdateInventoryIfChanged(updatedProduct.Id, dto.StoreId, dto.Quantity);
+
+            // 6. Trả về sản phẩm đã cập nhật
+            return await GetFullProductDto(updatedProduct.Id);
+        }
+        private async Task ProcessProductImagesToCloud(ProductCreateDto dto, Guid productId, string productName)
+        {
+            // Xử lý ảnh mới
+            var imageFiles = new[] { dto.ImageFile1, dto.ImageFile2, dto.ImageFile3, dto.ImageFile4 }
+                .Where(f => f != null)
+                .ToList();
+
+            foreach (var imageFile in imageFiles)
+            {
+                var imageUrl = await _imageService.UpdateImageToCloudAsync(imageFile);
+                var image = new ImageDto
+                {
+                    ProductId = productId,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {productName}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+
+            // Xử lý ảnh bị xóa (nếu có)
+            //if (dto.DeletedImageIds != null && dto.DeletedImageIds.Any())
+            //{
+            //    foreach (var imageId in dto.DeletedImageIds)
+            //    {
+            //        await _imageService.DeleteImageAsync(imageId);
+            //    }
+            //}
+        }
+
 
         private async Task UpdateInventoryIfChanged(Guid productId, Guid? storeId, int? quantity)
         {
@@ -241,8 +301,8 @@ namespace Ecommerce.API.Services
             return product == null ? null : _mapper.Map<ProductDto>(product);
         }
         public async Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
-            ProductQueryParameters parameters,
-            CancellationToken cancellationToken = default)
+    ProductQueryParameters parameters,
+    CancellationToken cancellationToken = default)
         {
             var paginatedResponse = await _productRepository.GetAllProductsPaginatedAsync(
                 parameters,
@@ -255,7 +315,7 @@ namespace Ecommerce.API.Services
                 paginatedResponse.PageIndex,
                 paginatedResponse.PageSize,
                 paginatedResponse.TotalCount,
-                itemDtos
+                itemDtos.ToList()
             );
         }
 

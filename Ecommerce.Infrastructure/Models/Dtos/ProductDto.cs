@@ -20,6 +20,9 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string StoreName { get; set; } = default!;
         public DateTime CreateAt { get; set; }
         public DateTime UpdateAt { get; set; }
+        public int Sold { get; set; } // Number of items sold
+        public decimal Rating { get; set; } // Average rating (for example, 4.5)
+        public Guid CategoryId { get; set; }
     }
 
     // DTO cho thông tin tồn kho tại từng cửa hàng

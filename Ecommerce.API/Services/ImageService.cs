@@ -6,11 +6,18 @@ namespace Ecommerce.API.Services
     {
         private readonly IImageRepository _imageRepository;
         private readonly IMapper _mapper;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public ImageService(IImageRepository imageRepository, IMapper mapper)
+        public ImageService(
+            IImageRepository imageRepository, 
+            IMapper mapper,
+            ICloudinaryService cloudinary
+            )
         {
             _imageRepository = imageRepository;
             _mapper = mapper;
+            _cloudinaryService = cloudinary;
+
         }
         public async Task<ImageDto> AddImageAsync(ImageDto file)
         {
@@ -67,5 +74,23 @@ namespace Ecommerce.API.Services
 
             return $"/images/{fileName}";
         }
+
+        public async Task<string> UpdateImageToCloudAsync(IFormFile file)
+        {
+            if (file.Length == 0)
+                throw new ArgumentException("File is empty");
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+                throw new ArgumentException("Không đúng định dạng ảnh");
+
+            // Upload to Cloudinary
+            var imageUrl = await _cloudinaryService.UploadImageAsync(file);
+
+            return imageUrl; // Trả về đường dẫn Cloudinary
+        }
+
     }
 }
