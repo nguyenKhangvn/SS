@@ -59,11 +59,19 @@ services:
       VnPay__Locale: ${VNPAY_LOCALE}
       VnPay__ReturnUrl: ${VNPAY_RETURN_URL}
       TimeZoneId: ${TIMEZONE_ID}
+        # config JWT
+      JWT__KEY: ${JWT__KEY}
+      JWT__ISSUER: ${JWT__ISSUER}
+      JWT__AUDIENCE: ${JWT__AUDIENCE}
+      JWT__EXPIRYINMINUTES: ${JWT__EXPIRYINMINUTES}
+      JWT__REFRESHTOKENEXPIRYINDAYS: ${JWT__REFRESHTOKENEXPIRYINDAYS}
     ports:
       - "5000:8080" # Cho phép FE gọi http://localhost:5000
     depends_on:
       # - ecommerce-db
       - migration-service
+    volumes:
+      - ./Ecommerce.API/wwwroot/images:/app/wwwroot/images
 
 
 # volumes:
