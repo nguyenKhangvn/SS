@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Infrastructure.ExternalServices.Payment.VnPay;
+using Ecommerce.Infrastructure.Models.Dtos;
 
 namespace Ecommerce.API.Apis
 {
@@ -21,51 +22,49 @@ namespace Ecommerce.API.Apis
             });
 
             // Xử lý callback sau khi thanh toán
-            v1.MapGet("/payment/vnpay-return", async (
-                HttpContext context,
-                IVnPayService vnPayService,
-                IOrderRepository orderRepository
-                //EmailService emailService
-            ) =>
+            v1.MapGet("/payment/vnpay-return", async (HttpContext context) =>
             {
+                // Resolve service từ DI
+                var vnPayService = context.RequestServices.GetRequiredService<IVnPayService>();
+                var orderRepository = context.RequestServices.GetRequiredService<IOrderRepository>();
+                var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
                 var response = vnPayService.ProcessPaymentResponse(context.Request.Query);
 
-                if (response.Success && Guid.TryParse(response.OrderCode, out var orderId))
+                if (response?.VnPayResponseCode == "00")
                 {
-                    var order = await orderRepository.GetByIdAsync(orderId);
+                    var order = await orderRepository.GetOrderByOrderCode(response?.OrderCode);
                     if (order != null)
                     {
+                        var paymentDto = new PaymentDto
+                        {
+                            OrderId = order.Id,
+                            OrderCode = order.OrderCode,
+                            Amount = order.TotalAmount,
+                            PaymentMethod = response.PaymentMethod,
+                            Status = PaymentStatus.COMPLETED,
+                            TransactionId = response.TransactionId,
+                            PaidAt = DateTime.UtcNow
+                        };
+                        await paymentService.CreateAsync(paymentDto);
                         order.Status = OrderStatus.PROCESSING;
                         await orderRepository.UpdateAsync(order);
-
-                        //await emailService.SendEmailAsync(order.CustomerEmail,
-                        //    "Hóa đơn thanh toán",
-                        //    $"<h2>Thanh toán thành công</h2><p>Đơn hàng: {order.Id}<br/>Tổng tiền: {order.TotalAmount:N0} VND</p>");
                     }
                 }
 
                 return Results.Json(response);
             });
 
-            v1.MapPost("/payments/vnpay/verify", async (
-                [FromBody] Dictionary<string, string> vnpParams,
-                IVnPayService vnPayService) =>
+            v1.MapGet("/payment/{orderId:guid}", async (Guid orderId, IPaymentService paymentService) =>
             {
-                try
-                {
-                    var result = await vnPayService.VerifyVnPayPaymentAsync(vnpParams);
-                    return Results.Ok(new
-                    {
-                        success = result.IsSuccess
-                    });
-                }
-                catch (Exception ex)
-                {
-                    return Results.Problem($"Xác thực thất bại: {ex.Message}");
-                }
+                var payment = await paymentService.GetByOrderIdAsync(orderId);
+                return payment == null ? Results.NotFound() : Results.Ok(payment);
             });
 
-
+            v1.MapGet("/payment/", async (IPaymentService paymentService) =>
+            {
+                var payment = await paymentService.GetAllAsync();
+                return payment == null ? Results.NotFound() : Results.Ok(payment);
+            });
 
 
             return builder;
