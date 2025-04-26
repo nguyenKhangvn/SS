@@ -53,6 +53,10 @@ namespace Ecommerce.Infrastructure.Mapping
                 .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.StoreLocation.Name));
 
             CreateMap<AddOrUpdateProductStoreInventoryDto, ProductStoreInventory>().ReverseMap();
+
+
+            // payment
+            CreateMap<PaymentDto, Payment>().ReverseMap();
         }
     }
 }

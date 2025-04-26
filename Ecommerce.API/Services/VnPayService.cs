@@ -49,11 +49,18 @@ namespace Ecommerce.API.Services
                     vnpay.AddResponseData(key, value.ToString());
                 }
             }
-            var vnp_orderId = vnpay.GetResponseData("vnp_TxnRef");
-            var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
-            var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            var vnp_Amount = vnpay.GetResponseData("vnp_Amount");
+            var vnp_BankCode = vnpay.GetResponseData("vnp_BankCode");
+            var vnp_BankTranNo = vnpay.GetResponseData("vnp_BankTranNo");
+            var vnp_CardType = vnpay.GetResponseData("vnp_CardType");
             var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
+            var vnp_PayDate = vnpay.GetResponseData("vnp_PayDate");
+            var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            var vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
+            var vnp_TmnCode = vnpay.GetResponseData("vnp_TmnCode");
+            var vnp_TxnRef = vnpay.GetResponseData("vnp_TxnRef");
+            var vnp_TransactionNo = vnpay.GetResponseData("vnp_TransactionNo");
+            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
 
             bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, _config["VnPay:HashSecret"]);
             if (!checkSignature)
@@ -67,12 +74,20 @@ namespace Ecommerce.API.Services
             return new VnPaymentResponseModel
             {
                 Success = true,
+                Message = "Thanh toán thành công",
                 PaymentMethod = "VnPay",
                 OrderDescription = vnp_OrderInfo,
-                OrderCode = vnp_orderId.ToString(), // Fixed: Changed 'OrderId' to 'OrderCode'
-                TransactionId = vnp_TransactionId.ToString(),
-                Token = vnp_SecureHash,
-                VnPayResponseCode = vnp_ResponseCode
+                OrderCode = vnp_TxnRef,
+                TransactionId = vnp_TransactionNo,
+                Amount = vnp_Amount,
+                BankCode = vnp_BankCode,
+                BankTranNo = vnp_BankTranNo,
+                CardType = vnp_CardType,
+                PayDate = vnp_PayDate,
+                TmnCode = vnp_TmnCode,
+                TransactionStatus = vnp_TransactionStatus,
+                VnPayResponseCode = vnp_ResponseCode,
+                Token = vnp_SecureHash
             };
         }
         public async Task<PaymentVerificationResult> VerifyVnPayPaymentAsync(Dictionary<string, string> vnpParams)
