@@ -81,7 +81,7 @@ namespace Ecommerce.API.Extention
             //chat
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IChatRepository, ChatRepository>();
-=
+
             // Register Repositories
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatParticipantRepository, ChatParticipantRepository>();
