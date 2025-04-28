@@ -11,9 +11,14 @@ public static class ApplicationServiceExtensions
     {
         // 1. Cấu hình service defaults và OpenAPI
         builder.AddServiceDefaults();
+
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession();
+
         builder.Services.AddOpenApi();
         builder.Services.AddAntiforgery();
         builder.Services.AddSignalR();
+
         // cấu hình authen gg
         builder.Services.AddAuthentication(options =>
         {

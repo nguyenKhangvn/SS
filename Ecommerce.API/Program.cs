@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:5173") 
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // Allow cookies and credentials
+              .AllowCredentials();
     });
 });
 
@@ -36,6 +36,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 }
 app.UseHttpsRedirection();
+//au 
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapProductApi();
 app.MapCategoryApi();
 app.MapStoreLocationApi();
