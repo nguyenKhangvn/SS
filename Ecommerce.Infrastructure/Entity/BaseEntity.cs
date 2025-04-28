@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Infrastructure.Entity
 {
-    public enum OrderStatus { PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELED, RETURNED }
+    public enum OrderStatus { PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELED, RETURNED, COMPLETED }
     public enum PaymentStatus { PENDING, COMPLETED, FAILED, REFUNDED }
     public enum ShipmentStatus { PENDING, IN_TRANSIT, DELIVERED, FAILED }
     public enum DiscountType { PERCENTAGE, FIXED_AMOUNT }

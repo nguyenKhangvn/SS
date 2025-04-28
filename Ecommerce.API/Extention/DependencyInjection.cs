@@ -60,12 +60,14 @@ namespace Ecommerce.API.Extention
             //chat
             //services.AddScoped<IChatRepository, ChatRepository>();
             //services.AddScoped<IChatService, ChatService>();
+
             //auth
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAuthService, AuthService>();
+
             // product store inventory
             services.AddScoped<IProductStoreInventoryRepository, ProductStoreInventoryRepository>();
             services.AddScoped<IProductStoreInventoryService, ProductStoreInventoryService>();
@@ -86,6 +88,7 @@ namespace Ecommerce.API.Extention
 
             // Reports
             services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IReportService, ReportService>();
             return services;
         }
     }
