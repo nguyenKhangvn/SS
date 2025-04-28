@@ -1,17 +1,19 @@
-
-//using Ecommerce.API.Hubs;
 var builder = WebApplication.CreateBuilder(args);
-
+// Add SignalR
+builder.Services.AddSignalR();
 
 builder.Services.AddExtentionServices();
 builder.AddApplicationServices();
 
+//add swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") 
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -19,6 +21,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
 app.UseStaticFiles();
 app.MapDefaultEndpoints();
 
@@ -28,6 +31,7 @@ app.UseCors("AllowSpecificOrigin");
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
 }
 app.UseHttpsRedirection();
 //au 
@@ -45,10 +49,10 @@ app.MapOrderApi();
 app.MapCouponAPi();
 app.MapOrderItemApi();
 app.MapPaymentApi();
-//app.MapHub<ChatHub>("/chatHub");
-//app.MapChatApi();
+app.MapHub<ChatHub>("/chatHub");
+app.MapChatApi();
 app.MapImageApi();
 app.MapAuthApi();
 app.MapProductStoreInventoryApi();
+app.MapReportApi();
 app.Run();
-

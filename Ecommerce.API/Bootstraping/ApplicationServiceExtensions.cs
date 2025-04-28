@@ -41,6 +41,22 @@ public static class ApplicationServiceExtensions
                 new HeaderApiVersionReader("X-Version")
             );
         });
+        // swagger
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "Ecommerce API",
+                Version = "v1",
+                Description = "API tài liệu cho hệ thống Ecommerce",
+                Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                {
+                    Name = "Your Name",
+                    Email = "your@email.com",
+                    Url = new Uri("https://your-website.com")
+                }
+            });
+        });
 
 
         // 3. Cấu hình DbContext (kết hợp Aspire + appsettings)

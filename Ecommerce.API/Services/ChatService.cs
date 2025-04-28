@@ -42,7 +42,7 @@ namespace Ecommerce.API.Services
         public async Task<ChatDto> CreateChatAsync(CreateChatRequest request, Guid creatorUserId)
         {
             // Validate if participant user IDs exist (optional but recommended)
-            var participantUsers = await _userRepository.GetByIdsAsync(request.ParticipantUserIds.Concat(new[] { creatorUserId }).Distinct().ToList());
+            var participantUsers = await _userRepository.(request.ParticipantUserIds.Concat(new[] { creatorUserId }).Distinct().ToList());
             if (participantUsers.Count() != request.ParticipantUserIds.Concat(new[] { creatorUserId }).Distinct().Count())
             {
                 // Handle case where one or more participant user IDs are invalid
