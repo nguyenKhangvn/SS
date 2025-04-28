@@ -18,6 +18,8 @@ namespace Ecommerce.Infrastructure.Entity
         public int Stars { get; set; }
 
         public string? Comment { get; set; } // Nullable
+        public string? ImageUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         // Navigation Properties
         [ForeignKey("ProductId")]

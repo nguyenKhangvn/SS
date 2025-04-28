@@ -11,3 +11,5 @@ global using Microsoft.EntityFrameworkCore;
 global using Ecommerce.API.Bootstraping;
 global using Ecommerce.API.Extention;
 global using Ecommerce.API.Apis;
+global using Ecommerce.API.Hubs;
+global using Ecommerce.API.Repositories.Interfaces;

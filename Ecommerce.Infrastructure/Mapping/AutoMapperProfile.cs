@@ -54,7 +54,6 @@ namespace Ecommerce.Infrastructure.Mapping
 
             CreateMap<AddOrUpdateProductStoreInventoryDto, ProductStoreInventory>().ReverseMap();
 
-
             // payment
             CreateMap<PaymentDto, Payment>().ReverseMap();
         }
