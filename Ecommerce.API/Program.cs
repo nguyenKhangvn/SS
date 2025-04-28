@@ -1,3 +1,5 @@
+
+
 var builder = WebApplication.CreateBuilder(args);
 // Add SignalR
 builder.Services.AddSignalR();
@@ -13,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://localhost:5173") 
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -35,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 //au 
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -54,5 +57,5 @@ app.MapChatApi();
 app.MapImageApi();
 app.MapAuthApi();
 app.MapProductStoreInventoryApi();
-app.MapReportApi();
 app.Run();
+

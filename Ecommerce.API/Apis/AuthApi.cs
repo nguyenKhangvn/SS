@@ -167,26 +167,43 @@ namespace Ecommerce.API.Apis
             {
                 var props = new AuthenticationProperties
                 {
-                    RedirectUri = "/api/google-response" // Sau khi login xong, quay về đây
+                    RedirectUri = "/google-response" // Sau khi login xong, quay về đây
                 };
                 await context.ChallengeAsync("Google", props);
             });
 
             // Callback sau khi Google xác thực
-            v1.MapGet("/google-response", async (HttpContext context) =>
+            v1.MapGet("/google-response", async (HttpContext context, IAuthService authService) =>
             {
-                var result = await context.AuthenticateAsync("Cookies");
+                var authenticateResult = await context.AuthenticateAsync("Google");
 
-                if (!result.Succeeded)
+                if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
                 {
-                    return Results.BadRequest("Login failed");
+                    return Results.Unauthorized();
                 }
 
-                var claims = result.Principal.Identities.FirstOrDefault()?.Claims
-                    .Select(claim => new { claim.Type, claim.Value });
+                var email = authenticateResult.Principal.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+                var name = authenticateResult.Principal.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
 
-                return Results.Ok(claims);
+                if (string.IsNullOrEmpty(email))
+                {
+                    return Results.BadRequest("Email not found from Google");
+                }
+
+                // Gọi vào AuthService để xử lý login (giống như login thường)
+                var authResponse = await authService.LoginWithGoogleAsync(email, name);
+
+                // Sau khi login thành công, quay lại frontend (FE)
+                var frontendRedirectUrl = "http://localhost:5173/";  // URL của FE sau khi login thành công
+
+                // Bạn có thể truyền token hoặc thông tin khác vào URL để frontend sử dụng
+                frontendRedirectUrl = $"{frontendRedirectUrl}?access_token={authResponse.AccessToken}";
+
+                // Redirect về frontend
+                return Results.Redirect(frontendRedirectUrl);
             });
+
+
 
             return builder;
         }

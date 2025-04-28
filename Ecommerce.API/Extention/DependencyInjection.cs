@@ -75,13 +75,13 @@ namespace Ecommerce.API.Extention
             //cloud for img
             services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-            // payment
+            // payment 
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IPaymentService, PaymentService>();
             //chat
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IChatRepository, ChatRepository>();
-
+=
             // Register Repositories
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatParticipantRepository, ChatParticipantRepository>();

@@ -174,7 +174,58 @@ namespace Ecommerce.API.Services
             return refreshToken;
         }
 
-    
+        public async Task<AuthResponseDto> LoginWithGoogleAsync(string email, string name)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
+
+            // Tìm user theo email
+            var user = await _userRepository.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                // Nếu chưa có user → auto đăng ký
+                user = new User
+                {
+                    Email = email,
+                    Name = name,
+                    PasswordHash = "", // Có thể bỏ trống hoặc đặt flag isGoogleUser
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userRepository.AddAsync(user);
+            }
+
+            // Giống phần Login bình thường: tạo token, refresh token
+            var accessToken = _tokenService.GenerateJwtToken(user);
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(1440);
+
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var refreshToken = await CreateRefreshToken(user.Id, ipAddress);
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                    "refresh_token",
+                    refreshToken.Token,
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = refreshToken.Expires,
+                        Path = "/"
+                    });
+            }
+
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                Expiry = accessTokenExpiry,
+                User = _mapper.Map<UserDto>(user)
+            };
+        }
+
+
+
 
         private string GetDeviceInfo()
         {
