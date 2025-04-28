@@ -65,10 +65,6 @@ services:
       JWT__AUDIENCE: ${JWT__AUDIENCE}
       JWT__EXPIRYINMINUTES: ${JWT__EXPIRYINMINUTES}
       JWT__REFRESHTOKENEXPIRYINDAYS: ${JWT__REFRESHTOKENEXPIRYINDAYS}
-      #cloud img
-      Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME}
-      Cloudinary__ApiKey: ${CLOUDINARY_API_KEY}
-      Cloudinary__ApiSecret: ${CLOUDINARY_API_SECRET}
     ports:
       - "5000:8080" # Cho phép FE gọi http://localhost:5000
     depends_on:

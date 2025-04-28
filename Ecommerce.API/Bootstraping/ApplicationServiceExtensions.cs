@@ -14,24 +14,7 @@ public static class ApplicationServiceExtensions
         builder.Services.AddOpenApi();
         builder.Services.AddAntiforgery();
         builder.Services.AddSignalR();
-        // cấu hình authen gg
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultScheme = "Cookies";
-            options.DefaultChallengeScheme = "Google";
-        })
-        .AddCookie("Cookies", options =>
-        {
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.IsEssential = true;
-        })
-        .AddGoogle(options =>
-        {
-            options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            options.CallbackPath = "/signin-google";
-        });
+
         // 2. Cấu hình API Versioning
         builder.Services.AddApiVersioning(opts =>
         {

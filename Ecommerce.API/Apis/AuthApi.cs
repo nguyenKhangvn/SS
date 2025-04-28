@@ -4,8 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System;
 using static Ecommerce.Infrastructure.Models.Dtos.AuthDto;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 
 namespace Ecommerce.API.Apis
 {
@@ -159,33 +157,6 @@ namespace Ecommerce.API.Apis
                 }
 
                 return Results.Ok(new { message = "Token is valid" });
-            });
-            //login with gg
-          
-            // Login route
-            v1.MapGet("/login-google", async (HttpContext context) =>
-            {
-                var props = new AuthenticationProperties
-                {
-                    RedirectUri = "/api/google-response" // Sau khi login xong, quay về đây
-                };
-                await context.ChallengeAsync("Google", props);
-            });
-
-            // Callback sau khi Google xác thực
-            v1.MapGet("/google-response", async (HttpContext context) =>
-            {
-                var result = await context.AuthenticateAsync("Cookies");
-
-                if (!result.Succeeded)
-                {
-                    return Results.BadRequest("Login failed");
-                }
-
-                var claims = result.Principal.Identities.FirstOrDefault()?.Claims
-                    .Select(claim => new { claim.Type, claim.Value });
-
-                return Results.Ok(claims);
             });
 
             return builder;
