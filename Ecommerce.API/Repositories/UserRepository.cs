@@ -66,16 +66,5 @@ namespace Ecommerce.API.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
-
-        public async Task<IEnumerable<User>> GetByIdsAsync(List<Guid> ids)
-        {
-            if (ids == null || !ids.Any())
-                return Enumerable.Empty<User>();
-
-            return await _context.Users
-                                   .Where(u => ids.Contains(u.Id))
-                                   .ToListAsync();
-        }
-
     }
 }

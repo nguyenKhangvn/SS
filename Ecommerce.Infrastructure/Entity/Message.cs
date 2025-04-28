@@ -15,9 +15,9 @@ namespace Ecommerce.Infrastructure.Entity
         public Guid SenderId { get; set; }
 
         [Required]
-        public string Content { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty; // Consider max length or TEXT type
 
-        public DateTime SentAt { get; set; }
+        public DateTime SentAt { get; set; } // Can use BaseEntity.CreatedAt or have specific SentAt
 
         // Navigation Properties
         [ForeignKey("ChatId")]

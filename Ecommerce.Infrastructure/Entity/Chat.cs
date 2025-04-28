@@ -10,11 +10,12 @@ namespace Ecommerce.Infrastructure.Entity
     public class Chat : BaseEntity
     {
         [MaxLength(100)]
-        public string? Title { get; set; }
+        public string? Title { get; set; } // Nullable
 
         [Required]
         public ChatStatus Status { get; set; } = ChatStatus.ACTIVE;
 
+        // Navigation Properties
         public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
         public virtual ICollection<ChatParticipant> Participants { get; set; } = new List<ChatParticipant>();
     }

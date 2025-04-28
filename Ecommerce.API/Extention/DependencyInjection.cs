@@ -2,7 +2,6 @@
 using Ecommerce.API.Services;
 using Ecommerce.Infrastructure.Mapping;
 using Microsoft.AspNetCore.Identity;
-using Ecommerce.API.Repositories.Interfaces;
 //using Ecommerce.API.Repositories.Interfaces;
 
 namespace Ecommerce.API.Extention
