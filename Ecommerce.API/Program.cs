@@ -1,5 +1,3 @@
-
-
 var builder = WebApplication.CreateBuilder(args);
 // Add SignalR
 builder.Services.AddSignalR();
@@ -15,10 +13,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") 
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // Allow cookies and credentials
+              .AllowCredentials();
     });
 });
 
@@ -36,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 }
 app.UseHttpsRedirection();
+//au 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapProductApi();
 app.MapCategoryApi();
 app.MapStoreLocationApi();
@@ -52,5 +54,5 @@ app.MapChatApi();
 app.MapImageApi();
 app.MapAuthApi();
 app.MapProductStoreInventoryApi();
+app.MapReportApi();
 app.Run();
-
