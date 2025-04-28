@@ -73,7 +73,7 @@ namespace Ecommerce.API.Extention
             //cloud for img
             services.AddScoped<ICloudinaryService, CloudinaryService>();
 
-            // payment 
+            // payment
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IPaymentService, PaymentService>();
             //chat
@@ -84,6 +84,8 @@ namespace Ecommerce.API.Extention
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatParticipantRepository, ChatParticipantRepository>();
 
+            // Reports
+            services.AddScoped<IReportRepository, ReportRepository>();
             return services;
         }
     }
