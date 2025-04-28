@@ -2,6 +2,7 @@
 using Ecommerce.API.Services;
 using Ecommerce.Infrastructure.Mapping;
 using Microsoft.AspNetCore.Identity;
+using Ecommerce.API.Repositories.Interfaces;
 //using Ecommerce.API.Repositories.Interfaces;
 
 namespace Ecommerce.API.Extention
@@ -75,6 +76,14 @@ namespace Ecommerce.API.Extention
             // payment 
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IPaymentService, PaymentService>();
+            //chat
+            services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+=
+            // Register Repositories
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatParticipantRepository, ChatParticipantRepository>();
+
             return services;
         }
     }
