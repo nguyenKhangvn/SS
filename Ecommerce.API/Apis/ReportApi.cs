@@ -11,10 +11,10 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapReportApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce"); // Đăng ký phiên bản API
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/reports").HasApiVersion(1, 0); // Đặt phiên bản API là v1
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce/reports").HasApiVersion(1, 0); // Đặt phiên bản API là v1
 
             // [GET] Endpoint lấy danh sách sản phẩm bán chạy nhất
-            // http://localhost:5000/api/v1/reports/top-selling-products
+            // http://localhost:5000/api/v1/ecommerce/reports/top-selling-products
             v1.MapGet("/top-selling-products", async (IReportService reportService, [FromQuery] int top) =>
             {
                 var result = await reportService.GetTopSellingProductsAsync(top);
@@ -23,7 +23,7 @@ namespace Ecommerce.API.Apis
             });
 
             // [GET] Endpoint lấy thống kê trạng thái đơn hàng
-            // http://localhost:5000/api/v1/reports/order-status-statistics
+            // http://localhost:5000/api/v1/ecommerce/reports/order-status-statistics
             v1.MapGet("/order-status-statistics", async (IReportService reportService) =>
             {
                 var result = await reportService.GetOrderStatusStatisticsAsync();
@@ -32,7 +32,7 @@ namespace Ecommerce.API.Apis
             });
 
             // [GET] Endpoint lấy báo cáo doanh thu
-            // http://localhost:5000/api/v1/reports/revenue-report
+            // http://localhost:5000/api/v1/ecommerce/reports/revenue-report
             v1.MapGet("/revenue-report", async (IReportService reportService) =>
             {
                 var result = await reportService.GetRevenueReportAsync();
@@ -50,7 +50,7 @@ namespace Ecommerce.API.Apis
             });
 
             // [GET] Endpoint lấy báo cáo doanh thu theo ngày
-            // http://localhost:5000/api/v1/reports/daily-revenue-report
+            // http://localhost:5000/api/v1/ecommerce/reports/daily-revenue-report
             v1.MapGet("/daily-revenue-report", async (IReportService reportService, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate) =>
             {
                 var result = await reportService.GetDailyRevenueReportAsync(startDate, endDate);
@@ -59,7 +59,7 @@ namespace Ecommerce.API.Apis
             });
 
             // [GET] Endpoint lấy báo cáo tổng quan
-            // http://localhost:5000/api/v1/reports/overview-report
+            // http://localhost:5000/api/v1/ecommerce/reports/overview-report
             v1.MapGet("/overview-report", async (IReportService reportService, [FromQuery] DateTime? date) =>
             {
                 var result = await reportService.GetOverviewReportAsync(date);

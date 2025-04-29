@@ -9,10 +9,10 @@ namespace Ecommerce.API.Repositories
     {
         private readonly EcommerceDbContext _context;
 
-        /// <summary>  
-        /// Khởi tạo ReportRepository với EcommerceDbContext  
-        /// </summary>  
-        /// <param name="context">Đối tượng EcommerceDbContext để truy cập cơ sở dữ liệu</param>  
+        /// <summary>
+        /// Khởi tạo ReportRepository với EcommerceDbContext
+        /// </summary>
+        /// <param name="context">Đối tượng EcommerceDbContext để truy cập cơ sở dữ liệu</param>
         public ReportRepository(EcommerceDbContext context)
         {
             _context = context;
@@ -95,15 +95,19 @@ namespace Ecommerce.API.Repositories
         /// <returns>Danh sách báo cáo số lượng đơn hàng theo ngày</returns>
         public async Task<List<DailyOrderReportDto>> GetDailyOrderReportAsync(DateTime startDate, DateTime endDate)
         {
+            // Đảm bảo startDate và endDate là UTC
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var query = await _context.Orders
-                .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
-                .GroupBy(o => o.CreatedAt.Date)
-                .Select(g => new DailyOrderReportDto
-                {
-                    Date = g.Key,
-                    TotalOrders = g.Count()
-                })
-                .ToListAsync();
+            .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
+            .GroupBy(o => o.CreatedAt.Date)
+            .Select(g => new DailyOrderReportDto
+            {
+                Date = g.Key,
+                TotalOrders = g.Count()
+            })
+            .ToListAsync();
 
             return query;
         }
@@ -116,6 +120,10 @@ namespace Ecommerce.API.Repositories
         /// <returns>Danh sách báo cáo doanh thu theo ngày</returns>
         public async Task<List<DailyRevenueReportDto>> GetDailyRevenueReportAsync(DateTime startDate, DateTime endDate)
         {
+            // Chắc chắn đầu vào là UTC
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
             var query = await _context.Orders
                 .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
                 .GroupBy(o => o.CreatedAt.Date)
@@ -136,6 +144,11 @@ namespace Ecommerce.API.Repositories
         /// <returns>Đối tượng chứa thông tin báo cáo tổng quan</returns>
         public async Task<OverviewReportDto> GetOverviewReportAsync(DateTime? date = null)
         {
+            if (date.HasValue)
+            {
+                date = DateTime.SpecifyKind(date.Value, DateTimeKind.Utc);
+            }
+
             var totalOrders = await _context.Orders
                 .Where(o => !date.HasValue || o.CreatedAt.Date == date.Value.Date)
                 .CountAsync();
@@ -150,5 +163,6 @@ namespace Ecommerce.API.Repositories
                 TotalRevenue = totalRevenue,
             };
         }
+
     }
 }
