@@ -1,6 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 // Add SignalR
 builder.Services.AddSignalR();
+//cache
+builder.Services.AddMemoryCache();
 
 builder.Services.AddExtentionServices();
 builder.AddApplicationServices();

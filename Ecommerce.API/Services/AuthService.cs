@@ -178,23 +178,21 @@ namespace Ecommerce.API.Services
         {
             if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
 
-            // Tìm user theo email
             var user = await _userRepository.GetUserByEmailAsync(email);
 
             if (user == null)
             {
-                // Nếu chưa có user → auto đăng ký
                 user = new User
                 {
                     Email = email,
                     Name = name,
-                    PasswordHash = "", // Có thể bỏ trống hoặc đặt flag isGoogleUser
+                    Role = RoleStatus.CUSTOMER,
+                    PasswordHash = "",
                     CreatedAt = DateTime.UtcNow
                 };
                 await _userRepository.AddAsync(user);
             }
 
-            // Giống phần Login bình thường: tạo token, refresh token
             var accessToken = _tokenService.GenerateJwtToken(user);
             var accessTokenExpiry = DateTime.UtcNow.AddMinutes(1440);
 
@@ -223,9 +221,6 @@ namespace Ecommerce.API.Services
                 User = _mapper.Map<UserDto>(user)
             };
         }
-
-
-
 
         private string GetDeviceInfo()
         {

@@ -89,6 +89,9 @@ namespace Ecommerce.API.Extention
             // Reports
             services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped<IReportService, ReportService>();
+
+            // tmp code
+            services.AddScoped<ITempCodeStore, TempCodeMemoryStoreService>();
             return services;
         }
     }

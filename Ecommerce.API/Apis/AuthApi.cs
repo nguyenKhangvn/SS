@@ -6,18 +6,21 @@ using System;
 using static Ecommerce.Infrastructure.Models.Dtos.AuthDto;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Ecommerce.API.Services.Interfaces;
 
 namespace Ecommerce.API.Apis
 {
     public static class AuthApi
     {
+        public const string DefaultFeLoginRedirectUri = "http://localhost:5173/login";
         public static IEndpointRouteBuilder MapAuthApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
             var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            
 
-            // [POSt] http://localhost:5000/api/v1/ecommerce/users
-            v1.MapPost("/auth/login", async (LoginRequest dto, IAuthService service) =>
+        // [POSt] http://localhost:5000/api/v1/ecommerce/users
+        v1.MapPost("/auth/login", async (LoginRequest dto, IAuthService service) =>
             {
                 try
                 {
@@ -78,69 +81,42 @@ namespace Ecommerce.API.Apis
             // [POST] http://localhost:5000/api/v1/ecommerce/auth/refresh-token
             v1.MapPost("/auth/refresh-token", async (HttpContext context, IAuthService service) =>
             {
+                var refreshToken = context.Request.Cookies["refresh_token"];
+                var accessToken = context.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrEmpty(refreshToken) || string.IsNullOrEmpty(accessToken))
+                    return Results.Unauthorized();
+
                 try
                 {
-                    // 1. Lấy refresh token từ cookie
-                    var refreshTokenFromCookie = context.Request.Cookies["refresh_token"];
-                    if (string.IsNullOrEmpty(refreshTokenFromCookie))
+                    var result = await service.RefreshTokenAsync(new RefreshTokenRequestDto
                     {
-                        context.Response.Cookies.Delete("refresh_token");
-                        return Results.Unauthorized();
-                    }
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken
+                    });
 
-                    // 2. Đọc access token từ body request
-                    var requestDto = await context.Request.ReadFromJsonAsync<RefreshTokenRequestDto>();
-                    if (requestDto == null || string.IsNullOrEmpty(requestDto.AccessToken))
+                    // Cập nhật refresh token mới trong cookie
+                    context.Response.Cookies.Append("refresh_token", result.RefreshToken, new CookieOptions
                     {
-                        return Results.BadRequest("Access token is required in request body");
-                    }
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = result.Expiry
+                    });
 
-                    // 3. Tạo DTO để gọi service (kết hợp token từ cookie và body)
-                    var refreshRequest = new RefreshTokenRequestDto
+                    return Results.Ok(new
                     {
-                        AccessToken = requestDto.AccessToken,
-                        RefreshToken = refreshTokenFromCookie
-                    };
-
-                    // 4. Gọi service xử lý nghiệp vụ
-                    var authResponse = await service.RefreshTokenAsync(refreshRequest);
-
-                    // 5. Cập nhật cookie với refresh token mới
-                    context.Response.Cookies.Append(
-                        "refresh_token",
-                        authResponse.RefreshToken,
-                        new CookieOptions
-                        {
-                            HttpOnly = true,
-                            Secure = true,
-                            SameSite = SameSiteMode.Strict,
-                            Expires = authResponse.Expiry, // Sử dụng thời gian hết hạn từ service
-                            Path = "/"
-                        });
-
-                    // 6. Trả về response (không bao gồm refresh token trong body)
-                    var responseToClient = new
-                    {
-                        AccessToken = authResponse.AccessToken,
-                        Expiry = authResponse.Expiry,
-                        User = authResponse.User
-                    };
-
-                    return Results.Ok(responseToClient);
+                        AccessToken = result.AccessToken,
+                        Expiry = result.Expiry
+                    });
                 }
-                catch (SecurityTokenException ex)
+                catch (SecurityTokenException)
                 {
                     context.Response.Cookies.Delete("refresh_token");
                     return Results.Unauthorized();
                 }
-                catch (Exception ex)
-                {
-                    // Log lỗi ở đây nếu cần
-                    return Results.Problem(
-                        detail: "An unexpected error occurred",
-                        statusCode: StatusCodes.Status500InternalServerError);
-                }
-            });
+            }).RequireAuthorization();
+
             //validate token
             v1.MapGet("/auth/validate-token", (HttpContext context, ITokenService tokenService) =>
             {
@@ -161,51 +137,82 @@ namespace Ecommerce.API.Apis
                 return Results.Ok(new { message = "Token is valid" });
             });
             //login with gg
-          
+
             // Login route
-            v1.MapGet("/login-google", async (HttpContext context) =>
+            v1.MapGet("/auth/login-google", async (HttpContext context) =>
             {
+                var redirectUri = context.Request.Query["redirect_uri"].ToString();
+
+                if (string.IsNullOrEmpty(redirectUri))
+                    redirectUri = DefaultFeLoginRedirectUri;
+
                 var props = new AuthenticationProperties
                 {
-                    RedirectUri = "/google-response" // Sau khi login xong, quay về đây
+                    RedirectUri = $"/api/v1/ecommerce/auth/google-response?redirect_uri={Uri.EscapeDataString(redirectUri)}"
                 };
+
                 await context.ChallengeAsync("Google", props);
             });
 
-            // Callback sau khi Google xác thực
-            v1.MapGet("/google-response", async (HttpContext context, IAuthService authService) =>
+
+            v1.MapGet("/auth/google-response", async (
+                     HttpContext context,
+                     [FromServices] IAuthService authService,
+                     [FromServices] ITempCodeStore tempCodeStore) =>
             {
-                var authenticateResult = await context.AuthenticateAsync("Google");
+                var authResult = await context.AuthenticateAsync("Google");
+                if (!authResult.Succeeded)
+                    return Results.Redirect(GetErrorRedirect(context, "auth_failed"));
 
-                if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var email = authenticateResult.Principal.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
-                var name = authenticateResult.Principal.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+                var email = authResult.Principal.FindFirstValue(ClaimTypes.Email);
+                var name = authResult.Principal.FindFirstValue(ClaimTypes.Name);
 
                 if (string.IsNullOrEmpty(email))
+                    return Results.Redirect(GetErrorRedirect(context, "no_email"));
+
+                try
                 {
-                    return Results.BadRequest("Email not found from Google");
+                    var response = await authService.LoginWithGoogleAsync(email, name);
+                    var tempCode = Guid.NewGuid().ToString("N");
+                    await tempCodeStore.SaveAsync(tempCode, response);
+
+                    var redirectUri = context.Request.Query["redirect_uri"].ToString();
+                    if (string.IsNullOrEmpty(redirectUri))
+                        redirectUri = DefaultFeLoginRedirectUri;
+
+                    return Results.Redirect($"{redirectUri}?code={tempCode}");
                 }
-
-                // Gọi vào AuthService để xử lý login (giống như login thường)
-                var authResponse = await authService.LoginWithGoogleAsync(email, name);
-
-                // Sau khi login thành công, quay lại frontend (FE)
-                var frontendRedirectUrl = "http://localhost:5173/";  // URL của FE sau khi login thành công
-
-                // Bạn có thể truyền token hoặc thông tin khác vào URL để frontend sử dụng
-                frontendRedirectUrl = $"{frontendRedirectUrl}?access_token={authResponse.AccessToken}";
-
-                // Redirect về frontend
-                return Results.Redirect(frontendRedirectUrl);
+                catch
+                {
+                    return Results.Redirect(GetErrorRedirect(context, "404"));
+                }
             });
 
 
+            v1.MapPost("/auth/google-callback", async (
+                [FromBody] GoogleCallbackRequestDto dto,
+                [FromServices] ITempCodeStore store) =>
+            {
+                var authResponse = await store.GetAsync(dto.Code);
+                if (authResponse == null)
+                    return Results.BadRequest("!!!code");
 
+                await store.RemoveAsync(dto.Code);
+
+                return Results.Ok(authResponse);
+            });
             return builder;
+        }
+        private static string GetErrorRedirect(HttpContext context, string error)
+        {
+            var redirectUri = context.GetRedirectUri();
+            return $"{redirectUri}?error={error}";
+        }
+
+        private static string GetRedirectUri(this HttpContext context)
+        {
+            return context.Request.Query["redirect_uri"].FirstOrDefault()
+                   ?? "http://localhost:5173/";
         }
     }
 }
