@@ -12,5 +12,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task RevokeTokenAsync(string refreshToken);
         Task RequestPasswordResetAsync(string email);
         Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
+        Task<AuthResponseDto> LoginWithGoogleAsync(string email, string name);
     }
 }

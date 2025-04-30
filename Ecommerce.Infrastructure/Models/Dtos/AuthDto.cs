@@ -36,6 +36,8 @@ namespace Ecommerce.Infrastructure.Models.Dtos
 
         public class ResetPasswordDto
         {
+            [Required]
+            public string AccessToken { get; set; } = default!;
             [EmailAddress, Required]
             public string Email { get; set; } = default!;
 
@@ -75,5 +77,11 @@ namespace Ecommerce.Infrastructure.Models.Dtos
             [EmailAddress, Required]
             public string Email { get; set; } = default!;
         }
+
+        public class GoogleCallbackRequestDto
+        {
+            public string Code { get; set; } = string.Empty;
+        }
+
     }
 }

@@ -174,7 +174,53 @@ namespace Ecommerce.API.Services
             return refreshToken;
         }
 
-    
+        public async Task<AuthResponseDto> LoginWithGoogleAsync(string email, string name)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
+
+            var user = await _userRepository.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    Name = name,
+                    Role = RoleStatus.CUSTOMER,
+                    PasswordHash = "",
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userRepository.AddAsync(user);
+            }
+
+            var accessToken = _tokenService.GenerateJwtToken(user);
+            var accessTokenExpiry = DateTime.UtcNow.AddMinutes(1440);
+
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var refreshToken = await CreateRefreshToken(user.Id, ipAddress);
+
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                    "refresh_token",
+                    refreshToken.Token,
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = refreshToken.Expires,
+                        Path = "/"
+                    });
+            }
+
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                Expiry = accessTokenExpiry,
+                User = _mapper.Map<UserDto>(user)
+            };
+        }
 
         private string GetDeviceInfo()
         {

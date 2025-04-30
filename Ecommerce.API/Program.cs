@@ -1,6 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 // Add SignalR
 builder.Services.AddSignalR();
+//cache
+builder.Services.AddMemoryCache();
 
 builder.Services.AddExtentionServices();
 builder.AddApplicationServices();
@@ -34,7 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 }
 app.UseHttpsRedirection();
-//au 
+//au
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -50,9 +53,11 @@ app.MapCouponAPi();
 app.MapOrderItemApi();
 app.MapPaymentApi();
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ReviewHub>("/reviewHub");
 app.MapChatApi();
 app.MapImageApi();
 app.MapAuthApi();
 app.MapProductStoreInventoryApi();
 app.MapReportApi();
+app.MapReviewApi();
 app.Run();

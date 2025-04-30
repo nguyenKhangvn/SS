@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
+using Ecommerce.Infrastructure.Models.Dtos.Reports;
 using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
-
 
 namespace Ecommerce.Infrastructure.Mapping
 {
@@ -36,7 +36,7 @@ namespace Ecommerce.Infrastructure.Mapping
             //.ForMember(dest => dest.ManufacturerName, opt => opt.MapFrom(src => src.Manufacturer.Name))
             //.ForMember(dest => dest.DiscountName, opt => opt.MapFrom(src => src.Discount != null ? src.Discount.Name : null));
             CreateMap<ProductDto, Product>();
-                
+
             CreateMap<ProductCreateDto, Product>().ReverseMap();
             CreateMap<ProductUpdateDto, Product>().ReverseMap();
 
@@ -56,6 +56,14 @@ namespace Ecommerce.Infrastructure.Mapping
 
             // payment
             CreateMap<PaymentDto, Payment>().ReverseMap();
+
+            // review
+            CreateMap<ReviewDto, Review>().ReverseMap();
+            CreateMap<CreateReviewDto, Review>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<UpdateReviewDto, Review>().ReverseMap();
+
         }
     }
 }

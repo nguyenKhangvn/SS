@@ -34,7 +34,6 @@ namespace Ecommerce.API.Services
         public async Task<ProductDto> AddProductAsync([FromForm] ProductCreateDto dto)
         {
             dto.Slug = GenerateSlug(dto.Name);
-
             var product = _mapper.Map<Product>(dto);
 
             var added = await _productRepository.AddAsync(product);
@@ -135,7 +134,7 @@ namespace Ecommerce.API.Services
 
             // 2. Cập nhật thông tin cơ bản
             dto.Slug = GenerateSlug(dto.Name);
-            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct thay vì tạo mới
+            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct
 
             // 3. Cập nhật sản phẩm trong database
             var updatedProduct = await _productRepository.UpdateAsync(id, existingProduct);
@@ -195,7 +194,7 @@ namespace Ecommerce.API.Services
 
             // 2. Cập nhật thông tin cơ bản
             dto.Slug = GenerateSlug(dto.Name);
-            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct thay vì tạo mới
+            _mapper.Map(dto, existingProduct); // Map từ dto vào existingProduct
 
             // 3. Cập nhật sản phẩm trong database
             var updatedProduct = await _productRepository.UpdateAsync(id, existingProduct);
@@ -301,8 +300,8 @@ namespace Ecommerce.API.Services
             return product == null ? null : _mapper.Map<ProductDto>(product);
         }
         public async Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
-    ProductQueryParameters parameters,
-    CancellationToken cancellationToken = default)
+                ProductQueryParameters parameters,
+                CancellationToken cancellationToken = default)
         {
             var paginatedResponse = await _productRepository.GetAllProductsPaginatedAsync(
                 parameters,
@@ -318,6 +317,74 @@ namespace Ecommerce.API.Services
                 itemDtos.ToList()
             );
         }
+        //add product to cloud
+        public async Task<ProductDto> AddProductAsyncToCloud([FromForm] ProductCreateDto dto)
+        {
+            dto.Slug = GenerateSlug(dto.Name);
+            var product = _mapper.Map<Product>(dto);
 
+            var added = await _productRepository.AddAsync(product);
+            if (dto.ImageFile1 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageToCloudAsync(dto.ImageFile1);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile2 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageToCloudAsync(dto.ImageFile2);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile3 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageToCloudAsync(dto.ImageFile3);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            if (dto.ImageFile4 != null)
+            {
+                var imageUrl = await _imageService.UpdateImageToCloudAsync(dto.ImageFile4);
+                var image = new ImageDto
+                {
+                    ProductId = added.Id,
+                    Url = imageUrl,
+                    AltText = $"Ảnh minh họa {added.Name}",
+                    DisplayOrder = 0
+                };
+                await _imageService.AddImageAsync(image);
+            }
+            // add quantity
+            if (dto.Quantity != null && dto.StoreId != null)
+            {
+                var inventoryDto = new AddOrUpdateProductStoreInventoryDto
+                {
+                    ProductId = added.Id,
+                    StoreLocationId = dto.StoreId,
+                    Quantity = dto.Quantity
+                };
+                await _productStoreInventoryService.AddAsync(inventoryDto);
+            }
+
+            return _mapper.Map<ProductDto>(product);
+        }
     }
 }

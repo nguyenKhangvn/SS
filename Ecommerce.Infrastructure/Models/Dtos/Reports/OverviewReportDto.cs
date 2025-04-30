@@ -1,5 +1,7 @@
 ﻿//Thống kê tổng quan toàn hệ thống.
 
+using System;
+
 namespace Ecommerce.Infrastructure.Models.Dtos.Reports
 {
     public class OverviewReportDto

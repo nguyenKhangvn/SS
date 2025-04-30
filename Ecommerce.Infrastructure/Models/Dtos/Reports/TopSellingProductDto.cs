@@ -1,4 +1,6 @@
-﻿// Yhống kê các sản phẩm bán chạy nhất
+﻿// Thống kê các sản phẩm bán chạy nhất
+
+using System;
 
 namespace Ecommerce.Infrastructure.Models.Dtos.Reports
 {

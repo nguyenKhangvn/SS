@@ -59,18 +59,41 @@ namespace Ecommerce.API.Extention
             //chat
             //services.AddScoped<IChatRepository, ChatRepository>();
             //services.AddScoped<IChatService, ChatService>();
+
             //auth
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IAuthService, AuthService>();
+
             // product store inventory
             services.AddScoped<IProductStoreInventoryRepository, ProductStoreInventoryRepository>();
             services.AddScoped<IProductStoreInventoryService, ProductStoreInventoryService>();
 
             //cloud for img
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+            // payment 
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            //chat
+            services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+
+            // Register Repositories
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatParticipantRepository, ChatParticipantRepository>();
+
+            // Reports
+            services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IReportService, ReportService>();
+
+            // tmp code
+            services.AddScoped<ITempCodeStore, TempCodeMemoryStoreService>();
+            // Review
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IReviewService, ReviewService>();
 
             return services;
         }

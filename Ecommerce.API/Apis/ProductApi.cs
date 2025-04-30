@@ -34,7 +34,7 @@ namespace Ecommerce.API.Apis
                 var products = await service.GetAllProductAsync(includeProperties);
                 return Results.Ok(products);
             });
-
+            //update
             v1.MapPost("/products/{productId:guid}", async (IProductService service, 
                                                             Guid productId, 
                                                             [FromForm] ProductCreateDto dto) =>
@@ -109,7 +109,6 @@ namespace Ecommerce.API.Apis
                  CancellationToken cancellationToken = default
              ) =>
             {
-                // Debug: Print out all query parameters
                 foreach (var param in context.Request.Query)
                 {
                     Console.WriteLine($"Parameter: {param.Key}, Value: {param.Value}");
@@ -137,7 +136,7 @@ namespace Ecommerce.API.Apis
 
                 return Results.Ok(paginatedResponse);
             });
-            //add product
+            //update product
             v2.MapPost("/products/{productId:guid}", async (IProductService service,
                                                            Guid productId,
                                                            [FromForm] ProductCreateDto dto) =>
@@ -147,6 +146,14 @@ namespace Ecommerce.API.Apis
                 return Results.Ok(updated);
             }).Accepts<ProductCreateDto>("multipart/form-data")
             .DisableAntiforgery();
+            //add product to cloud
+            v2.MapPost("/products", async (IProductService productService,
+                                            [FromForm] ProductCreateDto productDto) =>
+            {
+                return await productService.AddProductAsyncToCloud(productDto);
+            })
+                                    .Accepts<ProductCreateDto>("multipart/form-data")
+                                    .DisableAntiforgery();
 
             return builder;
         }
