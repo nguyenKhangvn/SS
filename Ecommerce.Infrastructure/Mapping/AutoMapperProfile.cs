@@ -56,6 +56,14 @@ namespace Ecommerce.Infrastructure.Mapping
 
             // payment
             CreateMap<PaymentDto, Payment>().ReverseMap();
+
+            // review
+            CreateMap<ReviewDto, Review>().ReverseMap();
+            CreateMap<CreateReviewDto, Review>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<UpdateReviewDto, Review>().ReverseMap();
+
         }
     }
 }

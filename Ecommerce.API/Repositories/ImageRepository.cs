@@ -15,9 +15,15 @@ namespace Ecommerce.API.Repositories
             return image;
         }
 
-        public Task<bool> DeleteImageAsync(Guid id)
+        public async Task<bool> DeleteImageAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var image = await _context.Images.FindAsync(id);
+            if (image == null)
+                return false;
+
+            _context.Images.Remove(image);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<Image>> GetAllImagesAsync()
@@ -25,9 +31,14 @@ namespace Ecommerce.API.Repositories
             return await _context.Images.ToListAsync();
         }
 
-        public Task<Image> GetImageByIdAsync(Guid id)
+        public async Task<Image> GetImageByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var image = await _context.Images.FindAsync(id);
+            if (image == null)
+            {
+                throw new InvalidOperationException($"Image with ID {id} not found.");
+            }
+            return image;
         }
 
         public async Task<List<Image>> GetImagesByProductIdAsync(Guid productId)
@@ -37,9 +48,18 @@ namespace Ecommerce.API.Repositories
                          .ToListAsync();
         }
 
-        public Task<Image> UpdateImageAsync(Image image)
+        public async Task<Image> UpdateImageAsync(Image image)
         {
-            throw new NotImplementedException();
+            var existingImage = await _context.Images.FindAsync(image.Id);
+            if (existingImage == null)
+                return null;
+
+            existingImage.ProductId = image.ProductId;
+            existingImage.Url = image.Url;
+
+            _context.Images.Update(existingImage);
+            await _context.SaveChangesAsync();
+            return existingImage;
         }
     }
 }

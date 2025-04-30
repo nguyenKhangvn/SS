@@ -92,6 +92,9 @@ namespace Ecommerce.API.Extention
 
             // tmp code
             services.AddScoped<ITempCodeStore, TempCodeMemoryStoreService>();
+            // Review
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IReviewService, ReviewService>();
             return services;
         }
     }
