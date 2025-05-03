@@ -49,7 +49,7 @@ app.MapUserApi();
 app.MapManufacturerApi();
 app.MapAddressApi();
 app.MapOrderApi();
-app.MapCouponAPi();
+app.MapCouponApi();
 app.MapOrderItemApi();
 app.MapPaymentApi();
 app.MapHub<ChatHub>("/chatHub");
