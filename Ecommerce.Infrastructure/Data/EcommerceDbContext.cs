@@ -32,6 +32,8 @@ namespace Ecommerce.Infrastructure.Data
             public DbSet<ProductStoreInventory> ProductStoreInventories { get; set; }
 
             public DbSet<RefreshToken> RefreshTokens { get; set; }
+            public DbSet<UserCoupon> UserCoupons { get; set; }
+
 
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options)
             {

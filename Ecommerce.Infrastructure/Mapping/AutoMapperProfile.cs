@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
-using Ecommerce.Infrastructure.Models.Dtos.Reports;
-using static Ecommerce.Infrastructure.Models.Dtos.ProductCreateDto;
 
 namespace Ecommerce.Infrastructure.Mapping
 {
@@ -64,6 +62,9 @@ namespace Ecommerce.Infrastructure.Mapping
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateReviewDto, Review>().ReverseMap();
 
+            // coupon 
+            CreateMap<CouponDto, Coupon>().ReverseMap();
+            CreateMap<CouponCreateDto, Coupon>().ReverseMap();
         }
     }
 }
