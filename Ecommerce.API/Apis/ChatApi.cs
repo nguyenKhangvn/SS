@@ -1,6 +1,11 @@
-﻿using Ecommerce.Infrastructure.Models.Dtos;
+﻿using Ecommerce.API.Services;
+using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Security.Claims;
+using Ecommerce.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecommerce.API.Apis
 {
@@ -9,126 +14,110 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapChatApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce")
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce/chat")
                          .HasApiVersion(1, 0)
-                         .RequireAuthorization(); // Bắt buộc xác thực toàn bộ group này
+                         .RequireAuthorization();
 
-            // Tạo Chat
-            v1.MapPost("/chats", async ([FromBody] CreateChatRequest request,
-                              IChatService chatService,
-                              HttpContext httpContext) =>
+            // tất cả cuộc trò chuyện
+            v1.MapGet("/conversations", async (IChatService chatService, HttpContext context) =>
             {
-                var creatorId = GetUserIdFromClaims(httpContext);
-                if (creatorId == null)
-                    return Results.Unauthorized();
+                var userId = GetUserIdFromClaims(context);
+                if (userId == null) return Results.Unauthorized();
 
-                try
-                {
-                    var chatDto = await chatService.CreateChatAsync(request, creatorId.Value);
-                    return Results.Created($"/api/chats/{chatDto.Id}", chatDto);
-                }
-                catch (ArgumentException ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
-                catch (Exception)
-                {
-                    return Results.Problem("An error occurred while creating the chat.");
-                }
+                var conversations = await chatService.GetUserConversationsAsync(userId.Value);
+                return Results.Ok(conversations);
+            });
+
+            // lịch sử trò chuyện
+            v1.MapGet("/conversation/{chatId}", async (IChatService chatService, HttpContext context, Guid chatId) =>
+            {
+                var currentUserId = GetUserIdFromClaims(context);
+                if (currentUserId == null) return Results.Unauthorized();
+
+                var messages = await chatService.GetMessagesForChatAsync(chatId, currentUserId.Value);
+                return Results.Ok(messages);
+            });
+
+            // đánh dấu là đã đọc
+            v1.MapPost("/mark-read/{userId}", async (IChatService chatService, HttpContext context, Guid userId) =>
+            {
+                var currentUserId = GetUserIdFromClaims(context);
+                if (currentUserId == null) return Results.Unauthorized();
+
+                await chatService.MarkMessagesAsReadAsync(userId, currentUserId.Value);
+                return Results.Ok();
+            });
+
+            // tin nhắn chưa đọc
+            v1.MapGet("/unread-count", async (IChatService chatService, HttpContext context) =>
+            {
+                var userId = GetUserIdFromClaims(context);
+                if (userId == null) return Results.Unauthorized();
+
+                var count = await chatService.GetUnreadCountAsync(userId.Value);
+                return Results.Ok(count);
+            });
+
+            // gửi tin nhắn
+            v1.MapPost("/send", async (IChatService chatService, HttpContext context, SendMessageRequest message) =>
+            {
+                var senderId = GetUserIdFromClaims(context);
+                if (senderId == null) return Results.Unauthorized();
+
+                var savedMessage = await chatService.SendMessageAsync(senderId.Value, message);
+                return Results.Ok(savedMessage);
             });
 
 
-            // Lấy danh sách chats của User
-            v1.MapGet("/user/{userId:guid}", async (
-                Guid userId,
-                IChatService chatService,
-                HttpContext httpContext) =>
-            {
-                var callerId = GetUserIdFromClaims(httpContext);
-                if (callerId == null) return Results.Unauthorized();
-                if (callerId != userId) return Results.Forbid(); // Không cho phép xem chat người khác
 
-                var chats = await chatService.GetChatsForUserAsync(userId);
-                return Results.Ok(chats);
-            })
-            .WithName("GetChatsForUser")
-            .Produces<IEnumerable<ChatDto>>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden);
-
-            // Lấy thông tin chi tiết Chat
-            v1.MapGet("/{chatId:guid}", async (
-                Guid chatId,
-                IChatService chatService,
-                HttpContext httpContext) =>
+            // danh sách nhân viên hỗ trợ
+            v1.MapGet("/staff", async (IChatService chatService, HttpContext context) =>
             {
-                var userId = GetUserIdFromClaims(httpContext);
+                var userId = GetUserIdFromClaims(context);
                 if (userId == null) return Results.Unauthorized();
 
-                var chat = await chatService.GetChatByIdAsync(chatId);
-                if (chat == null) return Results.NotFound();
+                var staffMembers = await chatService.GetStaffMembersAsync();
+                return Results.Ok(staffMembers);
+            });
 
-                if (!chat.Participants.Any(p => p.UserId == userId))
-                {
-                    return Results.Forbid();
-                }
+            // danh sách khách hàng
+            v1.MapGet("/customers", async (IChatService chatService, HttpContext context) =>
+            {
+                var userId = GetUserIdFromClaims(context);
+                if (userId == null) return Results.Unauthorized();
 
+                var customers = await chatService.GetCustomersAsync();
+                return Results.Ok(customers);
+            });
+
+            // tạo cuộc trò chuyện mới
+            v1.MapPost("/create-staff-chat", async (IChatService chatService, HttpContext context) =>
+            {
+                var userId = GetUserIdFromClaims(context);
+                if (userId == null) return Results.Unauthorized();
+
+                var chat = await chatService.CreateStaffChatAsync(userId.Value);
                 return Results.Ok(chat);
-            })
-            .WithName("GetChatById")
-            .Produces<ChatDto>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden);
+            });
 
-            // Lấy danh sách Messages trong Chat
-            v1.MapGet("/{chatId:guid}/messages", async (
-                Guid chatId,
-                [FromQuery] int skip,
-                [FromQuery] int take,
-                IChatService chatService,
-                HttpContext httpContext) =>
+            //lấy cuộc trò chuyện với admin
+            v1.MapGet("/messages/{chatId}", async (IChatService chatService, HttpContext context, Guid chatId) =>
             {
-                var userId = GetUserIdFromClaims(httpContext);
-                if (userId == null) return Results.Unauthorized();
 
-                var chat = await chatService.GetChatByIdAsync(chatId);
-                if (chat == null) return Results.NotFound();
-
-                if (!chat.Participants.Any(p => p.UserId == userId))
-                {
-                    return Results.Forbid();
-                }
-
-                var messages = await chatService.GetMessagesForChatAsync(chatId, userId.Value, skip, take);
+                var messages = await chatService.GetMessagesByChatIdAsync(chatId);
                 return Results.Ok(messages);
-            })
-            .WithName("GetChatMessages")
-            .Produces<IEnumerable<MessageDto>>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden);
-
-            // Tham gia Chat
-            v1.MapPost("/{chatId:guid}/join", async (
-                Guid chatId,
-                IChatService chatService,
-                HttpContext httpContext) =>
+            });
+            // lấy chat id dựa vào id user
+            v1.MapGet("/chat-id-with/{otherUserId}", async (IChatService chatService, HttpContext context, Guid otherUserId) =>
             {
-                var userId = GetUserIdFromClaims(httpContext);
-                if (userId == null) return Results.Unauthorized();
+                var currentUserId = GetUserIdFromClaims(context);
+                if (currentUserId == null) return Results.Unauthorized();
 
-                var request = new JoinChatRequest { ChatId = chatId, UserId = userId.Value };
-                var success = await chatService.JoinChatAsync(request);
+                var chatId = await chatService.GetOrCreateChatWithUserAsync(otherUserId);
+                return Results.Ok(new { chatId });
+            });
 
-                return success
-                    ? Results.Ok("Successfully joined the chat.")
-                    : Results.BadRequest("Failed to join chat (chat not found or already a participant).");
-            })
-            .WithName("JoinChat")
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized);
+
 
             return builder;
         }
@@ -141,10 +130,16 @@ namespace Ecommerce.API.Apis
             return userId;
         }
     }
+
     public class CreateChatMessageDto
     {
         public Guid ChatId { get; set; }
         public string Content { get; set; }
         public Guid SenderId { get; set; }
+    }
+
+    public class FindOrCreateAdminChatRequest
+    {
+        public Guid AdminUserId { get; set; }
     }
 }

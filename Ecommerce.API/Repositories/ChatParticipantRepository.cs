@@ -34,5 +34,17 @@ namespace Ecommerce.API.Repositories
         {
             return await _context.ChatParticipants.AnyAsync(cp => cp.ChatId == chatId && cp.UserId == userId);
         }
+
+        public async Task AddParticipantAsync(Guid chatId, Guid userId)
+        {
+            var participant = new ChatParticipant
+            {
+                ChatId = chatId,
+                UserId = userId
+            };
+            await _context.ChatParticipants.AddAsync(participant);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

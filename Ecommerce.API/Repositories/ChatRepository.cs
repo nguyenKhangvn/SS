@@ -60,5 +60,19 @@ namespace Ecommerce.API.Repositories
         {
             return await _context.Chats.AnyAsync(c => c.Id == id);
         }
+
+        public async Task<Chat?> FindChatByCustomerIdAsync(Guid customerId)
+        {
+            return await _context.Chats
+                .Include(c => c.Participants)
+                .ThenInclude(cp => cp.User)
+                .Include(c => c.Messages)
+                .Where(c =>
+                    c.Participants.Count == 2 &&
+                    c.Participants.Any(p => p.UserId == customerId))
+                .OrderByDescending(c => c.Messages.Max(m => m.SentAt)) // Latest chat first
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

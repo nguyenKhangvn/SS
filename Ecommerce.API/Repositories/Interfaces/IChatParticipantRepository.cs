@@ -6,6 +6,8 @@
         Task<ChatParticipant?> GetByChatAndUserAsync(Guid chatId, Guid userId);
         Task<IEnumerable<ChatParticipant>> GetParticipantsForChatAsync(Guid chatId);
         Task<bool> IsUserInChatAsync(Guid chatId, Guid userId);
+        Task AddParticipantAsync(Guid chatId, Guid userId);
+
     }
 }
     

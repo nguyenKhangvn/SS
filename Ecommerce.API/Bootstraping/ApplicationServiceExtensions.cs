@@ -1,5 +1,4 @@
-﻿
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +8,7 @@ public static class ApplicationServiceExtensions
 {
     public static IHostApplicationBuilder AddApplicationServices(this IHostApplicationBuilder builder)
     {
-        // 1. Cấu hình service defaults và OpenAPI
+        // 1. Service defaults and OpenAPI
         builder.AddServiceDefaults();
 
         builder.Services.AddDistributedMemoryCache();
@@ -19,25 +18,37 @@ public static class ApplicationServiceExtensions
         builder.Services.AddAntiforgery();
         builder.Services.AddSignalR();
 
-        // cấu hình authen gg
-        builder.Services.AddAuthentication(options =>
+        // 2. Authentication (Google)
+        //builder.Services.AddAuthentication(options =>
+        //{
+        //    options.DefaultScheme = "Cookies";
+        //    options.DefaultChallengeScheme = "Google";
+        //})
+        //.AddCookie("Cookies", options =>
+        //{
+        //    options.Cookie.SameSite = SameSiteMode.None;
+        //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        //    options.Cookie.IsEssential = true;
+        //});
+
+
+        // 3. Redirect handling for APIs
+        builder.Services.ConfigureApplicationCookie(options =>
         {
-            options.DefaultScheme = "Cookies";
-            options.DefaultChallengeScheme = "Google";
-        })
-        .AddCookie("Cookies", options =>
-        {
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.Cookie.IsEssential = true;
-        })
-        .AddGoogle(options =>
-        {
-            options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-            options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-            options.CallbackPath = "/signin-google";
+            options.Events.OnRedirectToLogin = context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/api"))
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                }
+
+                context.Response.Redirect(context.RedirectUri);
+                return Task.CompletedTask;
+            };
         });
-        // 2. Cấu hình API Versioning
+
+        // 4. API Versioning
         builder.Services.AddApiVersioning(opts =>
         {
             opts.ReportApiVersions = true;
@@ -46,14 +57,15 @@ public static class ApplicationServiceExtensions
                 new HeaderApiVersionReader("X-Version")
             );
         });
-        // swagger
+
+        // 5. Swagger
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
             {
                 Title = "Ecommerce API",
                 Version = "v1",
-                Description = "API tài liệu cho hệ thống Ecommerce",
+                Description = "API documentation for the Ecommerce system",
                 Contact = new Microsoft.OpenApi.Models.OpenApiContact
                 {
                     Name = "Your Name",
@@ -63,12 +75,8 @@ public static class ApplicationServiceExtensions
             });
         });
 
-
-        // 3. Cấu hình DbContext (kết hợp Aspire + appsettings)
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        // Log connection string để debug
-        var loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder.AddConsole());
+        // 6. Database
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
         builder.Services.AddDbContext<EcommerceDbContext>(options =>
         {

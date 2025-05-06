@@ -61,6 +61,10 @@ namespace Ecommerce.Infrastructure.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<UpdateReviewDto, Review>().ReverseMap();
+            //chat
+            CreateMap<ChatDto, Chat>().ReverseMap();
+            CreateMap<ChatMessageDto, Message>().ReverseMap();
+            CreateMap<ChatParticipantDto, ChatParticipant>().ReverseMap();
 
             // coupon 
             CreateMap<CouponDto, Coupon>().ReverseMap();
