@@ -5,6 +5,7 @@ namespace Ecommerce.API.Services.Interfaces
     public interface ICouponService
     {
         Task<IEnumerable<CouponDto>> GetAllAsync(Guid? userId, bool onlyActive);
+        Task<IEnumerable<CouponDto>> GetCouponsActiveAsync(bool onlyActive = true, Guid? userId = null);
         Task<CouponDto?> GetByIdAsync(Guid id);
         Task<CouponDto> AddAsync(CouponCreateDto dto);
         Task<CouponDto?> UpdateAsync(Guid id, CouponCreateDto dto);
