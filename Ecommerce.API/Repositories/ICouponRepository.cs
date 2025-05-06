@@ -3,6 +3,7 @@
     public interface ICouponRepository
     {
         Task<IEnumerable<Coupon>> GetAllAsync(bool onlyActive = true, Guid? userId = null);
+        Task<IEnumerable<Coupon>> GetCouponsActiveAsync(bool onlyActive = true, Guid? userId = null);
         Task<Coupon?> GetByIdAsync(Guid id);
         Task<Coupon> AddAsync(Coupon coupon);
         Task<Coupon?> UpdateAsync(Coupon coupon);

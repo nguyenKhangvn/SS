@@ -4,11 +4,19 @@ namespace Ecommerce.API.Services.Interfaces
 {
     public interface IChatService
     {
-        Task<ChatDto?> GetChatByIdAsync(Guid chatId);
-        Task<IEnumerable<ChatDto>> GetChatsForUserAsync(Guid userId);
-        Task<ChatDto> CreateChatAsync(CreateChatRequest request, Guid creatorUserId);
-        Task<MessageDto?> SendMessageAsync(SendMessageRequest request, Guid senderUserId);
-        Task<bool> JoinChatAsync(JoinChatRequest request);
-        Task<IEnumerable<MessageDto>> GetMessagesForChatAsync(Guid chatId, Guid userId, int skip = 0, int take = 50);
+        Task<ChatMessageDto> SendMessageAsync(Guid senderId, SendMessageRequest message);
+        Task<IEnumerable<ChatMessageDto>> GetMessagesForChatAsync(Guid chatId, Guid currentUserId);
+        Task<IEnumerable<ChatConversationDto>> GetUserConversationsAsync(Guid userId);
+        Task MarkMessagesAsReadAsync(Guid senderId, Guid receiverId);
+        Task<int> GetUnreadCountAsync(Guid userId);
+        
+        // New methods for staff-customer chat
+        Task<IEnumerable<UserDto>> GetStaffMembersAsync();
+        Task<IEnumerable<UserDto>> GetCustomersAsync();
+        Task<ChatDto> CreateStaffChatAsync(Guid customerId);
+
+        Task<IEnumerable<ChatMessageDto>> GetMessagesByChatIdAsync(Guid chatId);
+        Task<Guid> GetOrCreateChatWithUserAsync(Guid customerId);
+
     }
 } 

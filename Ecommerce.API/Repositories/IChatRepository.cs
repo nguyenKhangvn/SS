@@ -10,5 +10,7 @@ namespace Ecommerce.API.Repositories
         Task UpdateAsync(Chat chat);
         Task DeleteAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
+        Task<Chat?> FindChatByCustomerIdAsync(Guid customerId);
+
     }
 } 

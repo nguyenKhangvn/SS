@@ -13,6 +13,22 @@
         {
             var query = _context.Coupons.AsQueryable();
 
+            //if (onlyActive)
+            //{
+            //    query = query.Where(c => c.IsActive && (c.EndTime == null || c.EndTime >= DateTime.UtcNow));
+            //}
+
+            if (userId.HasValue)
+            {
+                query = query.Where(c => c.UserId == null || c.UserId == userId);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Coupon>> GetCouponsActiveAsync(bool onlyActive = true, Guid? userId = null)
+        {
+            var query = _context.Coupons.AsQueryable();
             if (onlyActive)
             {
                 query = query.Where(c => c.IsActive && (c.EndTime == null || c.EndTime >= DateTime.UtcNow));

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Ecommerce.Infrastructure.Models.Dtos
 {
@@ -51,5 +52,34 @@ namespace Ecommerce.Infrastructure.Models.Dtos
     {
         public Guid ChatId { get; set; }
         public Guid UserId { get; set; } // User joining the chat
+    }
+
+    public class ChatMessageDto
+    {
+        public Guid Id { get; set; }
+        public Guid SenderId { get; set; }
+        public Guid ReceiverId { get; set; }
+        public string Content { get; set; }
+        public DateTime SentAt { get; set; }
+        public bool IsRead { get; set; }
+        public string SenderName { get; set; }
+        public string ReceiverName { get; set; }
+        public Guid ChatId { get; set; }
+
+    }
+
+    public class SendMessageDto
+    {
+        public Guid ReceiverId { get; set; }
+        public string Content { get; set; }
+    }
+
+    public class ChatConversationDto
+    {
+        public Guid UserId { get; set; }
+        public string UserName { get; set; }
+        public string LastMessage { get; set; }
+        public DateTime LastMessageTime { get; set; }
+        public int UnreadCount { get; set; }
     }
 } 

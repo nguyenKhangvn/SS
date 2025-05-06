@@ -31,6 +31,12 @@ namespace Ecommerce.API.Apis
                 return Results.Ok(coupons);
             });
 
+            v1.MapGet("/coupons-active", async (ICouponService service, [FromQuery] Guid? userId, [FromQuery] bool onlyActive = true) =>
+            {
+                var coupons = await service.GetCouponsActiveAsync(onlyActive, userId);
+                return Results.Ok(coupons);
+            });
+
             // [PUT] http://localhost:5000/api/v1/ecommerce/coupons/{couponId:guid}
             v1.MapPut("/coupons/{couponId:guid}", async (ICouponService service, Guid couponId, CouponCreateDto dto) =>
             {

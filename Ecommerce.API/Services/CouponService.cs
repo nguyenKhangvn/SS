@@ -21,6 +21,13 @@ namespace Ecommerce.API.Services
             return _mapper.Map<IEnumerable<CouponDto>>(coupons);
         }
 
+        public async Task<IEnumerable<CouponDto>> GetCouponsActiveAsync(bool onlyActive = true, Guid? userId = null)
+        {
+            var coupons = await _couponRepository.GetCouponsActiveAsync(onlyActive, userId);
+            return _mapper.Map<IEnumerable<CouponDto>>(coupons); // Corrected return type to match the method signature
+        }
+
+
         public async Task<CouponDto?> GetByIdAsync(Guid id)
         {
             var coupon = await _couponRepository.GetByIdAsync(id);
@@ -145,5 +152,7 @@ namespace Ecommerce.API.Services
             var coupons = await _couponRepository.GetSavedCouponsAsync(userId);
             return _mapper.Map<IEnumerable<CouponDto>>(coupons);
         }
+
+        
     }
 }
