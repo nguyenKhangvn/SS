@@ -13,5 +13,6 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ApplyCouponResult> ApplyCouponAsync(string code, Guid? userId, decimal orderTotal);
         Task<SaveCouponResult> SaveCouponAsync(Guid userId, string couponCode);
         Task<IEnumerable<CouponDto>> GetSavedCouponsAsync(Guid userId);
+        Task<bool> UseAndDeleteAsync(Guid couponId);
     }
 }

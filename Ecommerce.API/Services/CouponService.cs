@@ -153,6 +153,30 @@ namespace Ecommerce.API.Services
             return _mapper.Map<IEnumerable<CouponDto>>(coupons);
         }
 
-        
+        public async Task<bool> UseAndDeleteAsync(Guid couponId)
+        {
+            try
+            {
+                var userCoupon = await _context.UserCoupons
+                    .FirstOrDefaultAsync(uc => uc.CouponId == couponId);
+
+                if (userCoupon == null)
+                {
+                    return false; // Không tìm thấy bản ghi để xóa
+                }
+
+                _context.UserCoupons.Remove(userCoupon);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                // Xử lý lỗi (log lỗi nếu cần)
+                return false;
+            }
+        }
+
+
     }
 }
