@@ -1,6 +1,4 @@
-
-
-namespace Ecommerce.API.Repositories
+namespace Ecommerce.API.Repositories.Interfaces
 {
     public interface IMessageRepository
     {

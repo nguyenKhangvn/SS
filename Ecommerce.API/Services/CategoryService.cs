@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Ecommerce.API.Repositories;
 using Ecommerce.API.Services.Interfaces;
 using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;

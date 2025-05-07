@@ -29,14 +29,14 @@ namespace Ecommerce.API.Apis
             });
 
             // lịch sử trò chuyện
-            v1.MapGet("/conversation/{chatId}", async (IChatService chatService, HttpContext context, Guid chatId) =>
-            {
-                var currentUserId = GetUserIdFromClaims(context);
-                if (currentUserId == null) return Results.Unauthorized();
+            //v1.MapGet("/conversation/{chatId}", async (IChatService chatService, HttpContext context, Guid chatId) =>
+            //{
+            //    var currentUserId = GetUserIdFromClaims(context);
+            //    if (currentUserId == null) return Results.Unauthorized();
 
-                var messages = await chatService.GetMessagesForChatAsync(chatId, currentUserId.Value);
-                return Results.Ok(messages);
-            });
+            //    var messages = await chatService.GetMessagesForChatAsync(chatId, currentUserId.Value);
+            //    return Results.Ok(messages);
+            //});
 
             // đánh dấu là đã đọc
             v1.MapPost("/mark-read/{userId}", async (IChatService chatService, HttpContext context, Guid userId) =>
@@ -49,17 +49,17 @@ namespace Ecommerce.API.Apis
             });
 
             // tin nhắn chưa đọc
-            v1.MapGet("/unread-count", async (IChatService chatService, HttpContext context) =>
-            {
-                var userId = GetUserIdFromClaims(context);
-                if (userId == null) return Results.Unauthorized();
+            //v1.MapGet("/unread-count", async (IChatService chatService, HttpContext context) =>
+            //{
+            //    var userId = GetUserIdFromClaims(context);
+            //    if (userId == null) return Results.Unauthorized();
 
-                var count = await chatService.GetUnreadCountAsync(userId.Value);
-                return Results.Ok(count);
-            });
+            //    var count = await chatService.GetUnreadCountAsync(userId.Value);
+            //    return Results.Ok(count);
+            //});
 
             // gửi tin nhắn
-            v1.MapPost("/send", async (IChatService chatService, HttpContext context, SendMessageRequest message) =>
+            v1.MapPost("/send", async (IChatService chatService, HttpContext context, SendMessageDto message) =>
             {
                 var senderId = GetUserIdFromClaims(context);
                 if (senderId == null) return Results.Unauthorized();
@@ -71,24 +71,24 @@ namespace Ecommerce.API.Apis
 
 
             // danh sách nhân viên hỗ trợ
-            v1.MapGet("/staff", async (IChatService chatService, HttpContext context) =>
-            {
-                var userId = GetUserIdFromClaims(context);
-                if (userId == null) return Results.Unauthorized();
+            //v1.MapGet("/staff", async (IChatService chatService, HttpContext context) =>
+            //{
+            //    var userId = GetUserIdFromClaims(context);
+            //    if (userId == null) return Results.Unauthorized();
 
-                var staffMembers = await chatService.GetStaffMembersAsync();
-                return Results.Ok(staffMembers);
-            });
+            //    var staffMembers = await chatService.GetStaffMembersAsync();
+            //    return Results.Ok(staffMembers);
+            //});
 
             // danh sách khách hàng
-            v1.MapGet("/customers", async (IChatService chatService, HttpContext context) =>
-            {
-                var userId = GetUserIdFromClaims(context);
-                if (userId == null) return Results.Unauthorized();
+            //v1.MapGet("/customers", async (IChatService chatService, HttpContext context) =>
+            //{
+            //    var userId = GetUserIdFromClaims(context);
+            //    if (userId == null) return Results.Unauthorized();
 
-                var customers = await chatService.GetCustomersAsync();
-                return Results.Ok(customers);
-            });
+            //    var customers = await chatService.GetCustomersAsync();
+            //    return Results.Ok(customers);
+            //});
 
             // tạo cuộc trò chuyện mới
             v1.MapPost("/create-staff-chat", async (IChatService chatService, HttpContext context) =>
@@ -131,15 +131,5 @@ namespace Ecommerce.API.Apis
         }
     }
 
-    public class CreateChatMessageDto
-    {
-        public Guid ChatId { get; set; }
-        public string Content { get; set; }
-        public Guid SenderId { get; set; }
-    }
-
-    public class FindOrCreateAdminChatRequest
-    {
-        public Guid AdminUserId { get; set; }
-    }
+  
 }

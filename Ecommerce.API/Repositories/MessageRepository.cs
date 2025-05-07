@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Ecommerce.API.Repositories.Interfaces;
 
 namespace Ecommerce.API.Repositories
 {

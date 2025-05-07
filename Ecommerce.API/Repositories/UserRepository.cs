@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Ecommerce.API.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Repositories
 {
@@ -120,5 +121,6 @@ namespace Ecommerce.API.Repositories
                 .OrderBy(u => Guid.NewGuid())
                 .FirstOrDefaultAsync();
         }
+
     }
 }

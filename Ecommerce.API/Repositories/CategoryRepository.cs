@@ -1,5 +1,4 @@
-﻿
-using Ecommerce.Infrastructure.Entity;
+﻿using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
 using Microsoft.EntityFrameworkCore;
 
