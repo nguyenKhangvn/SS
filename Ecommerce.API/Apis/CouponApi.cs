@@ -76,7 +76,15 @@ namespace Ecommerce.API.Apis
                 var savedCoupons = await service.GetSavedCouponsAsync(userId);
                 return Results.Ok(savedCoupons);
             });
-
+            v1.MapDelete("/coupons/use-and-delete/{couponId:guid}", async (ICouponService service, Guid couponId) =>
+            {
+                var deleteResult = await service.UseAndDeleteAsync(couponId);
+                if (deleteResult)
+                {
+                    return Results.Ok(new { Success = true, Message = "Coupon đã được áp dụng và xóa thành công." });
+                }
+                return Results.BadRequest("Không thể xóa coupon sau khi áp dụng.");
+            });
             return builder;
         }
     }

@@ -69,6 +69,9 @@ namespace Ecommerce.Infrastructure.Mapping
             // coupon 
             CreateMap<CouponDto, Coupon>().ReverseMap();
             CreateMap<CouponCreateDto, Coupon>().ReverseMap();
+
+            //message
+            CreateMap<MessageDto, Message>().ReverseMap();        
         }
     }
 }

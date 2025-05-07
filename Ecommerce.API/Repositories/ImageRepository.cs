@@ -1,5 +1,4 @@
-﻿
-namespace Ecommerce.API.Repositories
+﻿namespace Ecommerce.API.Repositories
 {
     public class ImageRepository : IImageRepository
     {

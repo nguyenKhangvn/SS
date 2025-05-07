@@ -1,8 +1,6 @@
-﻿
+﻿using Ecommerce.Infrastructure.Models.Dtos;
 
-using Ecommerce.Infrastructure.Models.Dtos;
-
-namespace Ecommerce.API.Repositories
+namespace Ecommerce.API.Repositories.Interfaces
 {
     public interface IProductRepository
     {

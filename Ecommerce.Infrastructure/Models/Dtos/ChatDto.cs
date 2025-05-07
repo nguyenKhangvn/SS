@@ -40,12 +40,6 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public List<Guid> ParticipantUserIds { get; set; } = new List<Guid>();
     }
 
-    // DTO for gửi tin nhắn
-    public class SendMessageRequest
-    {
-        public Guid ChatId { get; set; }
-        public string Content { get; set; }
-    }
 
     // DTO for tham gia vào chat
     public class JoinChatRequest
@@ -72,6 +66,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
     {
         public Guid ReceiverId { get; set; }
         public string Content { get; set; }
+        public Guid ChatId { get; set; }
     }
 
     public class ChatConversationDto
