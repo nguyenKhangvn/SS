@@ -16,22 +16,32 @@ namespace Ecommerce.API.Repositories
         public async Task<Discount?> GetByIdAsync(Guid id)
             => await _context.Discounts.Include(d => d.Products).FirstOrDefaultAsync(d => d.Id == id);
 
-        public async Task AddAsync(Discount discount)
+        public async Task<Discount> AddAsync(Discount entity)
         {
-            _context.Discounts.Add(discount);
+            await _context.Discounts.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task UpdateAsync(Discount discount)
+
+        public async Task<bool> UpdateAsync(Discount discount)
         {
             _context.Discounts.Update(discount);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task DeleteAsync(Discount discount)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            _context.Discounts.Remove(discount);
-            await _context.SaveChangesAsync();
+            var discount = await _context.Discounts.FindAsync(id);
+            if (discount != null)
+            {
+                _context.Discounts.Remove(discount);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
+
     }
 }

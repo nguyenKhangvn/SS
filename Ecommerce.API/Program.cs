@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Cache
 builder.Services.AddMemoryCache();
 
-// ✅ Cấu hình xác thực JWT + Google chỉ trong MỘT lệnh AddAuthentication()
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -49,12 +48,11 @@ builder.AddApplicationServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ✅ Cấu hình CORS chuẩn, tránh lỗi AllowCredentials + AllowAnyOrigin
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // ⚠️ KHÔNG dùng AllowAnyOrigin nếu đã AllowCredentials
+        policy.WithOrigins("http://localhost:5173") 
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -65,7 +63,6 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-// ✅ CORS phải đặt TRƯỚC Authentication/Authorization
 app.UseCors("AllowSpecificOrigin");
 
 app.UseSession();
@@ -78,7 +75,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // ✅ sau CORS
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Map các Hubs

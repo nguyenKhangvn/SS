@@ -4,8 +4,8 @@
     {
         Task<IEnumerable<Discount>> GetAllAsync();
         Task<Discount?> GetByIdAsync(Guid id);
-        Task AddAsync(Discount discount);
-        Task UpdateAsync(Discount discount);
-        Task DeleteAsync(Discount discount);
+        Task<Discount> AddAsync(Discount discount);
+        Task<bool> UpdateAsync(Discount discount);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

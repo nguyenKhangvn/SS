@@ -28,7 +28,7 @@ namespace Ecommerce.API.Services
         public async Task<DiscountDto> CreateAsync(DiscountDto dto)
         {
             var entity = _mapper.Map<Discount>(dto);
-            entity.Id = Guid.NewGuid(); // Tạo ID mới cho Discount
+            entity.Id = entity.Id != Guid.Empty ? entity.Id : Guid.NewGuid();
 
             var result = await _repository.AddAsync(entity);
             return _mapper.Map<DiscountDto>(result);
@@ -39,8 +39,10 @@ namespace Ecommerce.API.Services
             var discount = await _repository.GetByIdAsync(id);
             if (discount == null) return false;
 
-            // Cập nhật dữ liệu discount từ dto
+            // Cập nhật dữ liệu discount từ dto nhưng giữ nguyên Id
+            var originalId = discount.Id;
             _mapper.Map(dto, discount);
+            discount.Id = originalId; // Giữ lại Id gốc sau khi map
 
             return await _repository.UpdateAsync(discount);
         }
