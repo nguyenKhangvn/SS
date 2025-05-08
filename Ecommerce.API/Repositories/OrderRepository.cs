@@ -71,6 +71,7 @@ namespace Ecommerce.API.Repositories
         {
             var userOrders = await _context.Orders.Include(order => order.OrderItems)
                                        .Where(order => order.UserId == id)
+                                       .OrderByDescending(order => order.CreatedAt)
                                        .ToListAsync();
             return userOrders;
 

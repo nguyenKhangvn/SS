@@ -19,6 +19,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public Guid? CouponId { get; set; }
         public Guid? PaymentId { get; set; }
         public string? Notes { get; set; }
+        public DateTime CreatedAt { get; set; }
         public decimal TotalAmount { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public OrderStatus Status { get; set; } = OrderStatus.PENDING;
