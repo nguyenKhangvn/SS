@@ -62,7 +62,7 @@ namespace Ecommerce.API.Apis
             // http://localhost:5000/api/v1/ecommerce/reports/overview-report
             v1.MapGet("/overview-report", async (IReportService reportService, [FromQuery] DateTime? date) =>
             {
-                var result = await reportService.GetOverviewReportAsync(date);
+                var result = await reportService.GetOverviewReportAsyncV1(date);
                 // Trả về kết quả nếu có dữ liệu, nếu không trả về mã NotFound (không tìm thấy)
                 return result != null ? Results.Ok(result) : Results.NotFound();
             });
