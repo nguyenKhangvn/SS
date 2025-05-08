@@ -43,6 +43,37 @@ namespace Ecommerce.API.Apis
                 var setDefault = await service.SetDefaultAddress(id);
                 return setDefault != null ? Results.Ok() : Results.NotFound();
             });
+
+            // Proxy tỉnh/thành
+            v1.MapGet("/address/provinces", async () =>
+            {
+                using var client = new HttpClient();
+                var response = await client.GetAsync("https://provinces.open-api.vn/api/p/");
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                return Results.Content(content, "application/json");
+            });
+
+            // Proxy huyện theo tỉnh
+            v1.MapGet("/address/provinces/{code}", async (string code) =>
+            {
+                using var client = new HttpClient();
+                var response = await client.GetAsync($"https://provinces.open-api.vn/api/p/{code}?depth=2");
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                return Results.Content(content, "application/json");
+            });
+
+            // Proxy xã theo huyện
+            v1.MapGet("/address/districts/{code}", async (string code) =>
+            {
+                using var client = new HttpClient();
+                var response = await client.GetAsync($"https://provinces.open-api.vn/api/d/{code}?depth=2");
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                return Results.Content(content, "application/json");
+            });
+
             return builder;
         }
     }
