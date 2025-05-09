@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Globalization;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Ecommerce.API.Repositories
 {
@@ -109,13 +110,17 @@ namespace Ecommerce.API.Repositories
                     ProductQueryParameters parameters,
                     CancellationToken cancellationToken = default)
         {
-            var query = _context.Products.Include(p => p.Category)
-                        .Include(p => p.Manufacturer)
-                        .Include(p => p.Discount)
-                        .Include(p => p.Images)
-                        .Include(p => p.StoreInventories)
-                            .ThenInclude(si => si.StoreLocation)
-                        .AsQueryable();
+            var query = _context.Products
+                         .Where(p => p.IsActive == true &&
+                                     p.StoreInventories.Sum(si => si.Quantity) > 0)
+                         .Include(p => p.Category)
+                         .Include(p => p.Manufacturer)
+                         .Include(p => p.Discount)
+                         .Include(p => p.Images)
+                         .Include(p => p.StoreInventories)
+                             .ThenInclude(si => si.StoreLocation)
+                         .AsQueryable();
+
 
             // Filter
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
@@ -176,27 +181,28 @@ namespace Ecommerce.API.Repositories
         public async Task<List<Product>> GetMostClickedProductsAsync(int topN, string? include = null)
         {
             var query = _context.Products
-                .Where(p => _context.ProductClickTrackings
-                    .Select(c => c.ProductId)
-                    .Contains(p.Id))
-                .Include(p => p.Manufacturer)
-                .Include(p => p.Discount)
-                .Include(p => p.Images)
-                .Include(p => p.StoreInventories)
-                    .ThenInclude(si => si.StoreLocation)
+                .Where(p => p.StoreInventories.Any(si => si.Quantity > 0) && p.IsActive == true) 
+                .Join(_context.ProductClickTrackings,
+                    product => product.Id,
+                    click => click.ProductId,
+                    (product, click) => new
+                    {
+                        Product = product,
+                        ClickCount = click.ClickCount
+                    })
+                .OrderByDescending(x => x.ClickCount) 
+                .Take(topN)
+                .Select(x => x.Product) 
+                .Include(x => x.Images) 
+                .Include(x => x.StoreInventories) 
+                    .ThenInclude(x => x.StoreLocation)
                 .AsQueryable();
-
-
-            if (!string.IsNullOrWhiteSpace(include))
-            {
-                foreach (var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(prop.Trim());
-                }
-            }
 
             return await query.ToListAsync();
         }
+
+
+
 
         public async Task IncrementClickCountAsync(Guid productId)
         {
