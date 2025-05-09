@@ -1,4 +1,6 @@
 ﻿using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce.API.Repositories.Interfaces
 {
@@ -14,5 +16,6 @@ namespace Ecommerce.API.Repositories.Interfaces
                 ProductQueryParameters parameters,
                 CancellationToken cancellationToken = default
             );
+            Task ExecuteInTransactionAsync(Func<Task> operation);
     }
 }

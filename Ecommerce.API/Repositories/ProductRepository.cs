@@ -1,14 +1,16 @@
 ﻿using Asp.Versioning;
 using AutoMapper.QueryableExtensions;
 using Ecommerce.Infrastructure.Entity;
+using Ecommerce.Infrastructure.Models.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Globalization;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 
 namespace Ecommerce.API.Repositories
 {
-    public class ProductRepository: IProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly EcommerceDbContext _context;
         public ProductRepository(EcommerceDbContext context)
@@ -28,12 +30,12 @@ namespace Ecommerce.API.Repositories
 
             if (!string.IsNullOrWhiteSpace(include))
             {
-                foreach(var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(prop.Trim());
                 }
             }
-           
+
             return await query.ToListAsync();
         }
         public async Task<Product?> GetByIdAsync(Guid id, string? include = null)
@@ -67,7 +69,7 @@ namespace Ecommerce.API.Repositories
             //    .Reference(p => p.Discount).LoadAsync();
             return product;
         }
-        public async Task<Product?> UpdateAsync(Guid id,Product product)
+        public async Task<Product?> UpdateAsync(Guid id, Product product)
         {
             var existingProduct = await _context.Products.FindAsync(id);
             if (existingProduct == null)
@@ -171,6 +173,25 @@ namespace Ecommerce.API.Repositories
                 items
             );
         }
+        public async Task ExecuteInTransactionAsync(Func<Task> operation)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    await operation();
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            });
+        }
+
     }
-    }
+}
 

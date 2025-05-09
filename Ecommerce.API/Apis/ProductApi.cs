@@ -154,7 +154,15 @@ namespace Ecommerce.API.Apis
             })
                                     .Accepts<ProductCreateDto>("multipart/form-data")
                                     .DisableAntiforgery();
-
+            v1.MapPost("/products/buy-quantity/{productId:guid}", async (IProductService productService, Guid productId, UpdateAProduct dto) =>
+            {
+                var product = await productService.BuyProduct(productId, dto);
+                if (product is null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(product);
+            });
             return builder;
         }
     }
