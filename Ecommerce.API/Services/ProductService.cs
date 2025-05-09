@@ -414,10 +414,13 @@ namespace Ecommerce.API.Services
             await _productRepository.ExecuteInTransactionAsync(async () =>
             {
                 storeInventory.Quantity -= dto.Quantity;
+                storeInventory.Sold += dto.Quantity;
+
                 await Task.CompletedTask;
             });
             await _productRepository.UpdateAsync(productId, product);
             return _mapper.Map<ProductDto>(product);
+        }
         public async Task<List<ProductDto>> GetRecommendedProductsAsync(int topN)
         {
             // Kiểm tra cache

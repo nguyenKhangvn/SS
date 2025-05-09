@@ -37,7 +37,8 @@ namespace Ecommerce.API.Services
                 ProductName = p.Product?.Name,
                 StoreLocationId = p.StoreLocationId,
                 StoreName = p.StoreLocation?.Name,
-                Quantity = p.Quantity
+                Quantity = p.Quantity,
+                Sold = p.Sold
             }).ToList();
          //   return _mapper.Map<IEnumerable<ProductStoreInventoryDto>>(inventories);
         }
@@ -74,13 +75,14 @@ namespace Ecommerce.API.Services
                 {
                     ProductId = productId,
                     StoreLocationId = storeId,
-                    Quantity = quantityChange
+                    Quantity = quantityChange,
                 };
                 await _repository.AddAsync(inventory);
             }
             else
             {
                 inventory.Quantity += quantityChange;
+                //inventory.Sold -= quantityChange;
             }
 
         }

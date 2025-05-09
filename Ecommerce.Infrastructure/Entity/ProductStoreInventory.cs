@@ -16,7 +16,7 @@ namespace Ecommerce.Infrastructure.Entity
 
         [Required]
         public int Quantity { get; set; } // Số lượng tồn kho của sản phẩm tại cửa hàng này
-
+        public int Sold { get; set; } = 0;
         // Navigation Properties
         [ForeignKey("ProductId")]
         public virtual Product? Product { get; set; }
