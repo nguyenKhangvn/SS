@@ -14,5 +14,7 @@ namespace Ecommerce.API.Repositories.Interfaces
                 ProductQueryParameters parameters,
                 CancellationToken cancellationToken = default
             );
+           Task<List<Product>> GetMostClickedProductsAsync(int topN, string? include = null);
+           Task IncrementClickCountAsync(Guid productId);
     }
 }

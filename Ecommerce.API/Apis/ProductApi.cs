@@ -154,6 +154,26 @@ namespace Ecommerce.API.Apis
             })
                                     .Accepts<ProductCreateDto>("multipart/form-data")
                                     .DisableAntiforgery();
+            //gợi ý sp
+            v1.MapGet("/recommended", async (IProductService service, [FromQuery] int topN = 4) =>
+            {
+                var products = await service.GetRecommendedProductsAsync(topN);
+                return Results.Ok(products);
+            })
+            .Produces<List<ProductDto>>(StatusCodes.Status200OK);
+
+            v1.MapPost("/track-click", async (IProductService service, [FromBody] TrackClickDto request) =>
+            {
+                if (request.ProductId == Guid.Empty)
+                {
+                    return Results.BadRequest(" productId k hợp lệ");
+                }
+                await service.IncrementClickCountAsync(request.ProductId);
+                return Results.Ok();
+            })
+            .WithName("TrackClick")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
 
             return builder;
         }

@@ -19,5 +19,8 @@ namespace Ecommerce.API.Services.Interfaces
            ProductQueryParameters parameters,
             CancellationToken cancellationToken = default
        );
+        //goi y sp
+        Task<List<ProductDto>> GetRecommendedProductsAsync(int topN);
+        Task IncrementClickCountAsync(Guid productId);
     }
 }

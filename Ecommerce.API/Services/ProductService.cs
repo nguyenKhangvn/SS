@@ -1,6 +1,7 @@
 ﻿using Ecommerce.API.Services.Interfaces;
 using Ecommerce.Infrastructure.Dtos;
 using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.Extensions.Caching.Memory;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Polly.CircuitBreaker;
 using System.Globalization;
@@ -18,17 +19,22 @@ namespace Ecommerce.API.Services
         private readonly IImageService _imageService;
         private readonly IProductStoreInventoryService _productStoreInventoryService;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
+        private const string CacheKey = "RecommendedProducts";
+        private readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
         public ProductService(
             IProductRepository productRepository, 
             IImageService imageService,
             IProductStoreInventoryService productStoreInventoryService,
-            IMapper mapper
+            IMapper mapper,
+            IMemoryCache cache
         )
         {
             _productRepository = productRepository;
             _imageService = imageService;
             _productStoreInventoryService = productStoreInventoryService;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<ProductDto> AddProductAsync([FromForm] ProductCreateDto dto)
@@ -385,6 +391,36 @@ namespace Ecommerce.API.Services
             }
 
             return _mapper.Map<ProductDto>(product);
+        }
+
+        public async Task<List<ProductDto>> GetRecommendedProductsAsync(int topN)
+        {
+            // Kiểm tra cache
+            if (_cache.TryGetValue(CacheKey, out List<ProductDto> cachedProducts))
+            {
+                return cachedProducts;
+            }
+
+            // Lấy danh sách sản phẩm từ repository
+            var products = await _productRepository.GetMostClickedProductsAsync(topN);
+            var productExit = _mapper.Map<List<ProductDto>>(products);
+            // Lưu vào cache
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = CacheDuration
+            };
+            _cache.Set(CacheKey, products, cacheEntryOptions);
+
+            return productExit;
+        }
+
+        public async Task IncrementClickCountAsync(Guid productId)
+        {
+            // Gọi repository để tăng ClickCount
+            await _productRepository.IncrementClickCountAsync(productId);
+
+            // Xóa cache khi có cập nhật
+            _cache.Remove(CacheKey);
         }
     }
 }

@@ -171,6 +171,59 @@ namespace Ecommerce.API.Repositories
                 items
             );
         }
+        public async Task<List<Product>> GetMostClickedProductsAsync(int topN, string? include = null)
+        {
+            var query = _context.Products
+                .Where(p => _context.ProductClickTrackings
+                    .Select(c => c.ProductId)
+                    .Contains(p.Id))
+                .Include(p => p.Manufacturer)
+                .Include(p => p.Discount)
+                .Include(p => p.Images)
+                .Include(p => p.StoreInventories)
+                    .ThenInclude(si => si.StoreLocation)
+                .AsQueryable();
+
+
+            if (!string.IsNullOrWhiteSpace(include))
+            {
+                foreach (var prop in include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(prop.Trim());
+                }
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task IncrementClickCountAsync(Guid productId)
+        {
+            try
+            {
+                var clickTracking = await _context.ProductClickTrackings
+                    .FirstOrDefaultAsync(ct => ct.ProductId == productId);
+
+                if (clickTracking == null)
+                {
+                    clickTracking = new ProductClickTracking
+                    {
+                        ProductId = productId,
+                        ClickCount = 1
+                    };
+                    _context.ProductClickTrackings.Add(clickTracking);
+                }
+                else
+                {
+                    clickTracking.ClickCount++;
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
-    }
+}
 
