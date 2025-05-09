@@ -1,6 +1,8 @@
 ﻿using Ecommerce.API.Services.Interfaces;
 using Ecommerce.Infrastructure.Dtos;
+using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.Models.Dtos;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Polly.CircuitBreaker;
@@ -27,6 +29,7 @@ namespace Ecommerce.API.Services
             IImageService imageService,
             IProductStoreInventoryService productStoreInventoryService,
             IMapper mapper,
+            EcommerceDbContext context
             IMemoryCache cache
         )
         {
@@ -34,6 +37,7 @@ namespace Ecommerce.API.Services
             _imageService = imageService;
             _productStoreInventoryService = productStoreInventoryService;
             _mapper = mapper;
+            _context = context;
             _cache = cache;
         }
 
@@ -393,6 +397,29 @@ namespace Ecommerce.API.Services
             return _mapper.Map<ProductDto>(product);
         }
 
+        public async Task<ProductDto?> BuyProduct(Guid productId, UpdateAProduct dto)
+        {
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+            {
+                return null;
+            }
+
+            // Find the specific inventory entry for the product in the desired store  
+            var storeInventory = product.StoreInventories.FirstOrDefault();
+            if (storeInventory == null)
+            {
+                throw new InvalidOperationException("No inventory found for the product in the store.");
+            }
+
+            // Update the quantity  
+            await _productRepository.ExecuteInTransactionAsync(async () =>
+            {
+                storeInventory.Quantity -= dto.Quantity;
+                await Task.CompletedTask;
+            });
+            await _productRepository.UpdateAsync(productId, product);
+            return _mapper.Map<ProductDto>(product);
         public async Task<List<ProductDto>> GetRecommendedProductsAsync(int topN)
         {
             // Kiểm tra cache

@@ -83,4 +83,9 @@ namespace Ecommerce.Infrastructure.Models.Dtos
     {
         // Có thể thêm các trường đặc biệt cho update nếu cần
     }
+
+    public class UpdateAProduct
+    {
+        public int Quantity { get; set; }
+    }
 }

@@ -175,6 +175,15 @@ namespace Ecommerce.API.Apis
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
+            v1.MapPost("/products/buy-quantity/{productId:guid}", async (IProductService productService, Guid productId, UpdateAProduct dto) =>
+            {
+                var product = await productService.BuyProduct(productId, dto);
+                if (product is null)
+                {
+                    return Results.NotFound();
+                }
+                return Results.Ok(product);
+            });
             return builder;
         }
     }
