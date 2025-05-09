@@ -1,4 +1,6 @@
-﻿using Ecommerce.Infrastructure.ExternalServices.Payment.VnPay;
+﻿using Ecommerce.API.Repositories;
+using Ecommerce.API.Repositories.Interfaces;
+using Ecommerce.Infrastructure.ExternalServices.Payment.VnPay;
 using Ecommerce.Infrastructure.Models.Dtos;
 
 namespace Ecommerce.API.Apis
@@ -64,6 +66,27 @@ namespace Ecommerce.API.Apis
             {
                 var payment = await paymentService.GetAllAsync();
                 return payment == null ? Results.NotFound() : Results.Ok(payment);
+            });
+
+            v1.MapPost("/payment/{orderCode}", async (IPaymentService paymentService, IOrderService orderService, string orderCode) =>
+            {
+                var order = await orderService.GetOrderByOrderCode(orderCode);
+                if (order != null)
+                {
+                    var paymentDto = new PaymentDto
+                    {
+                        OrderId = order.Id,
+                        OrderCode = order.OrderCode,
+                        Amount = order.TotalAmount,
+                        PaymentMethod = "cod",
+                        Status = PaymentStatus.PENDING,
+                        TransactionId = null,
+                        PaidAt = DateTime.UtcNow
+                    };
+                    await paymentService.CreateAsync(paymentDto);
+                    return Results.Json(paymentDto);
+                }
+                return Results.NotFound();
             });
 
 
