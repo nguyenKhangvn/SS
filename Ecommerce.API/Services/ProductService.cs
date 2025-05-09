@@ -29,7 +29,6 @@ namespace Ecommerce.API.Services
             IImageService imageService,
             IProductStoreInventoryService productStoreInventoryService,
             IMapper mapper,
-            EcommerceDbContext context
             IMemoryCache cache
         )
         {
@@ -37,7 +36,6 @@ namespace Ecommerce.API.Services
             _imageService = imageService;
             _productStoreInventoryService = productStoreInventoryService;
             _mapper = mapper;
-            _context = context;
             _cache = cache;
         }
 
