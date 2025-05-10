@@ -403,7 +403,6 @@ namespace Ecommerce.API.Services
                 return null;
             }
 
-            // Find the specific inventory entry for the product in the desired store  
             var storeInventory = product.StoreInventories.FirstOrDefault();
             if (storeInventory == null)
             {
@@ -437,7 +436,7 @@ namespace Ecommerce.API.Services
             {
                 AbsoluteExpirationRelativeToNow = CacheDuration
             };
-            _cache.Set(CacheKey, products, cacheEntryOptions);
+            _cache.Set(CacheKey, productExit, cacheEntryOptions);
 
             return productExit;
         }
