@@ -49,7 +49,22 @@ namespace Ecommerce.API.Apis
                 return user is not null ? Results.Ok(user) : Results.NotFound();
             });
 
+            v1.MapPut("users/update-info", async (IUserService service, [FromForm] UpdateInfoDto dto) =>
+            {
+                var user = await service.GetByIdAsync(dto.Id, null);
+                if (user == null )
+                {
+                    return Results.NotFound();
+                }
+                var update = await service.UpdateInfoAsync(dto);
+                
+                return Results.Ok(update);
+            })
+            .DisableAntiforgery();
+            
             return builder;
+            
+            
         }
     }
 }

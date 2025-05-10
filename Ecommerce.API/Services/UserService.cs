@@ -9,11 +9,13 @@ namespace Ecommerce.API.Services
         private readonly IUserRepository _userRepository;
         private readonly PasswordHasher<User> _passwordHasher;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper, PasswordHasher<User> passwordHasher)
+        private readonly IImageService _imageService;
+        public UserService(IUserRepository userRepository, IMapper mapper, PasswordHasher<User> passwordHasher, IImageService imageService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
+            _imageService = imageService;
         }
         public async Task<UserDto?> AddAsync(UserCreateDto dto)
         {
@@ -82,6 +84,28 @@ namespace Ecommerce.API.Services
                 return null;
             }
             return _mapper.Map<UserDto>(user);
+        }
+        public async Task<UserDto> UpdateInfoAsync([FromForm] UpdateInfoDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(dto.Id);
+            if (user == null)
+            {
+                return null;
+            }
+
+            if (dto.Avatar != null)
+            {
+                var url = await _imageService.UpdateImageToCloudAsync(dto.Avatar);
+                user.Avatar = url;
+            }
+
+            user.Name = dto.Name;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            var updatedUser = await _userRepository.UpdateAsync(user);
+
+            return _mapper.Map<UserDto>(updatedUser);
         }
     }
 }
