@@ -149,39 +149,20 @@ namespace Ecommerce.API.Repositories
                 date = DateTime.SpecifyKind(date.Value, DateTimeKind.Utc);
             }
 
-            var currentDate = date?.Date ?? DateTime.UtcNow.Date;
-
             var totalOrders = await _context.Orders
-                .Where(o => !date.HasValue || o.CreatedAt.Date == currentDate)
+                .Where(o => !date.HasValue || o.CreatedAt.Date == date.Value.Date)
                 .CountAsync();
 
             var totalRevenue = await _context.OrderItems
-                .Where(oi => oi.Order.Status == Ecommerce.Infrastructure.Entity.OrderStatus.DELIVERED &&
-                            (!date.HasValue || oi.Order.CreatedAt.Date == currentDate))
+                .Where(oi => oi.Order.Status == Ecommerce.Infrastructure.Entity.OrderStatus.COMPLETED)
                 .SumAsync(oi => oi.TotalItemPrice);
-
-            var totalUsers = await _context.Users.CountAsync();
-
-            var totalProducts = await _context.Products.CountAsync();
-
-            var newCustomers = await _context.Users
-                .Where(u => u.CreatedAt.Date == currentDate)
-                .CountAsync();
-
-            var newOrders = await _context.Orders
-                .Where(o => o.CreatedAt.Date == currentDate)
-                .CountAsync();
 
             return new OverviewReportDto
             {
                 TotalOrders = totalOrders,
                 TotalRevenue = totalRevenue,
-                TotalCustomers = totalUsers,
-                TotalProducts = totalProducts,
-                NewCustomersToday = newCustomers
             };
         }
-
 
     }
 }
