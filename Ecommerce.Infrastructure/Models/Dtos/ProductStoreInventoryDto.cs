@@ -16,6 +16,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
 
         public string? ProductName { get; set; }
         public string? StoreName { get; set; }
+        public int Sold { get; set; } = 0;
     }
 
     public class AddOrUpdateProductStoreInventoryDto

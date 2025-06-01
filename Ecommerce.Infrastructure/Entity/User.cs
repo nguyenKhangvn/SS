@@ -32,6 +32,7 @@ namespace Ecommerce.Infrastructure.Entity
         public RoleStatus Role { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public string? Avatar { get; set; } // Nullable
 
         [MaxLength(100)]
         public string? ResetToken { get; set; } // Nullable

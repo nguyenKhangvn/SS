@@ -33,6 +33,7 @@ namespace Ecommerce.Infrastructure.Data
 
             public DbSet<RefreshToken> RefreshTokens { get; set; }
             public DbSet<UserCoupon> UserCoupons { get; set; }
+            public DbSet<ProductClickTracking> ProductClickTrackings { get; set; }
 
 
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options)

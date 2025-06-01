@@ -11,6 +11,7 @@ namespace Ecommerce.API.Services.Interfaces
         Task<bool> DeleteAsync(Guid id);
 
         Task<UserDto?> GetByEmailAsync(string email);
+        Task<UserDto> UpdateInfoAsync(UpdateInfoDto dto);
 
     }
 }

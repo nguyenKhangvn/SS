@@ -12,12 +12,15 @@ namespace Ecommerce.API.Services.Interfaces
         Task<ProductDto> AddProductAsyncToCloud(ProductCreateDto dto);
         Task<ProductDto?> UpdateProductAsync(Guid id, ProductCreateDto dto);
         Task<ProductDto?> UpdateProductAsyncToCloud(Guid id, ProductCreateDto dto);
-
+        Task<ProductDto?> BuyProduct(Guid productId, UpdateAProduct dto);
         Task<bool> DeleteProductAsync(Guid id);
         Task<ProductDto?> GetProductBySlugAsync(string slug);
         Task<PaginationResponse<ProductDto>> GetAllProductsPaginatedAsync(
            ProductQueryParameters parameters,
             CancellationToken cancellationToken = default
        );
+        //goi y sp
+        Task<List<ProductDto>> GetRecommendedProductsAsync(int topN);
+        Task IncrementClickCountAsync(Guid productId);
     }
 }

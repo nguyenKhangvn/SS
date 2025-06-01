@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ecommerce.Infrastructure.Entity;
+using Microsoft.AspNetCore.Http;
 namespace Ecommerce.Infrastructure.Models.Dtos
 {
     public class UserDto
@@ -16,6 +17,7 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string Role { get; set; } = RoleStatus.CUSTOMER.ToString();
         public bool IsActive { get; set; }
         public string? Token { get; set; }
+        public string? Avatar { get; set; }
     }
     public class UserCreateDto
     {
@@ -35,6 +37,16 @@ namespace Ecommerce.Infrastructure.Models.Dtos
         public string Role { get; set; } = RoleStatus.CUSTOMER.ToString();
 
         public bool IsActive { get; set; } = true;
+        public IFormFile? Avatar { get; set; }
     }
 
+    public class UpdateInfoDto
+    {
+        public Guid Id { get; set; }
+        [EmailAddress, Required]
+        public string Email { get; set; } = default!;
+        public string? Name { get; set; }
+        public string? PhoneNumber { get; set; }
+        public IFormFile? Avatar { get; set; }
+    }
 }

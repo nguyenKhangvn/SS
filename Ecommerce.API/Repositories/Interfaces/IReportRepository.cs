@@ -42,16 +42,5 @@ namespace Ecommerce.API.Services.Interfaces
         /// </summary>
         /// <param name="date"></param>
         Task<OverviewReportDto> GetOverviewReportAsync(DateTime? date = null);
-
-        //overview
-        Task<int> GetUserCountAsync(DateTime? endDateUtc = null);
-        Task<int> GetProductCountAsync(DateTime? endDateUtc = null);
-        Task<int> GetOrderCountAsync(DateTime? endDateUtc = null);
-        Task<decimal> GetTotalRevenueAsync(DateTime? endDateUtc = null); // Sum of TotalAmount from orders created up to endDateUtc
-
-        // Get counts/data within a specific date range [startDateUtc, endDateUtc)
-        Task<int> GetUserCountByCreationDateRangeAsync(DateTime startDateUtc, DateTime endDateUtc);
-        Task<List<Order>> GetOrdersByCreationDateRangeAsync(DateTime startDateUtc, DateTime endDateUtc); // Get orders to calculate revenue/AOV for the period
-
     }
 }

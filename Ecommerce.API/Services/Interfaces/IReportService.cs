@@ -33,7 +33,5 @@ namespace Ecommerce.API.Services.Interfaces
         /// Lấy thống kê tổng doanh thu của hệ thống.
         /// </summary>
         Task<RevenueReportDto> GetRevenueReportAsync();
-        //overview
-        Task<OverviewReportDtoV1> GetOverviewReportAsyncV1(DateTime? dateFilterUtc);
     }
 }
