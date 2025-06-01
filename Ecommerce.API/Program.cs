@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-// Các dịch vụ mở rộng
+// Các dịch vụ mở rộng ap
 builder.Services.AddExtentionServices();
 builder.AddApplicationServices();
 

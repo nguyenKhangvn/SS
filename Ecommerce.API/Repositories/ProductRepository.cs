@@ -201,9 +201,6 @@ namespace Ecommerce.API.Repositories
             return await query.ToListAsync();
         }
 
-
-
-
         public async Task IncrementClickCountAsync(Guid productId)
         {
             try

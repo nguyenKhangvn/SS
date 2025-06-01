@@ -38,7 +38,7 @@ public class Worker(IHostApplicationLifetime hostApplicationLifetime, IServicePr
 
         hostApplicationLifetime.StopApplication();
     }
-
+    // đảm bảo rằng cơ sở dữ liệu đã được tạo và sẵn sàng trước khi chạy migration
     private static async Task EnsureDatabaseAsync(EcommerceDbContext dbContext, CancellationToken cancellationToken)
     {
         var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
@@ -54,7 +54,7 @@ public class Worker(IHostApplicationLifetime hostApplicationLifetime, IServicePr
             }
         });
     }
-
+    // áp dụng migration để cập nhập cho cơ sở dữ liệu
     private static async Task RunMigrationAsync(EcommerceDbContext dbContext, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -68,7 +68,7 @@ public class Worker(IHostApplicationLifetime hostApplicationLifetime, IServicePr
     }
 
 
-
+    // thêm dư liệu mẫu vào cơ sở dữ liệu
     private static async Task SeedDataAsync(EcommerceDbContext dbContext, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
