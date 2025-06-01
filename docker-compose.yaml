@@ -23,7 +23,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     # depends_on:
-      # - ecommerce-db
+    # - ecommerce-db
     restart: on-failure
     tty: true
 
@@ -72,6 +72,8 @@ services:
       # AUTH
       Google__ClientId: ${GOOGLE_CLIENT_ID}
       Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+    env_file:
+      - .env
     ports:
       - "5000:8080" # Cho phép FE gọi http://localhost:5000
     depends_on:
@@ -79,7 +81,5 @@ services:
       - migration-service
     volumes:
       - ./Ecommerce.API/wwwroot/images:/app/wwwroot/images
-
-
 # volumes:
 #   pgdata:
