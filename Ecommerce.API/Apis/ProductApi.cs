@@ -13,16 +13,17 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapProductApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
-            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0).RequireAuthorization();
-
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0);
             v1.MapPost("/products", async (IProductService productService,
                                             [FromForm] ProductCreateDto productDto) =>
                                     {
                                         return await productService.AddProductAsync(productDto);
                                     })
                                     .Accepts<ProductCreateDto>("multipart/form-data")
-                                    .DisableAntiforgery();
+                                    .DisableAntiforgery()
+                                    .RequireAuthorization();
+            
 
             v1.MapGet("/products/{productId:guid}", async (IProductService service, Guid productId, [FromQuery] string? includeProperties = null) =>
             {
@@ -43,13 +44,16 @@ namespace Ecommerce.API.Apis
                 var updated = await service.UpdateProductAsync(productId, dto);
                 return Results.Ok(updated);
             }).Accepts<ProductCreateDto>("multipart/form-data")
-             .DisableAntiforgery();
+             .DisableAntiforgery()
+             .RequireAuthorization();
+
 
             v1.MapDelete("/products/{productId:guid}", async (IProductService service, Guid productId) =>
             {
                 var success = await service.DeleteProductAsync(productId);
                 return success ? Results.Ok() : Results.NotFound();
-            });
+            }).RequireAuthorization();
+
 
             //get san pham 
             v2.MapGet("/products", async ( [FromQuery] string? id,
