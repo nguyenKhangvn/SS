@@ -12,7 +12,9 @@ namespace Ecommerce.API.Apis
 {
     public static class AuthApi
     {
-        public const string DefaultFeLoginRedirectUri = "http://localhost:5173/login";
+        public static string DefaultFeLoginRedirectUri =>
+        Environment.GetEnvironmentVariable("DEFAULT_FE_LOGIN_REDIRECT_URI") ?? "http://localhost:5173/login";
+
         public static IEndpointRouteBuilder MapAuthApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
