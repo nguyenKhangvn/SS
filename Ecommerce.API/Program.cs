@@ -40,10 +40,7 @@ builder.Services.AddAuthentication(options =>
 .AddGoogle("Google", options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    Console.WriteLine("GOOGLE CLIENT ID: " + builder.Configuration["Authentication:Google:ClientId"]);
-
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    Console.WriteLine("GOOGLE CLIENT SECRET: " + builder.Configuration["Authentication:Google:ClientSecret"]);
     options.CallbackPath = "/signin-google";
     options.SaveTokens = true;
 });
@@ -61,7 +58,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000", "http://14.225.253.218:3000", "https://yensao.hoanggiaquynhon.io.vn")
+        policy.WithOrigins("http://localhost:5173", 
+                            "http://localhost:3000", 
+                            "http://14.225.253.218:3000", 
+                            "https://yensao.hoanggiaquynhon.io.vn")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

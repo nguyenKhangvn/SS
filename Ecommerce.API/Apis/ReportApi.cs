@@ -11,7 +11,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapReportApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce"); // Đăng ký phiên bản API
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce/reports").HasApiVersion(1, 0); // Đặt phiên bản API là v1
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce/reports").HasApiVersion(1, 0).RequireAuthorization();
 
             // [GET] Endpoint lấy danh sách sản phẩm bán chạy nhất
             // http://localhost:5000/api/v1/ecommerce/reports/top-selling-products

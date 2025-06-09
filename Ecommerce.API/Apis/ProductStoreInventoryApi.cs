@@ -7,7 +7,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapProductStoreInventoryApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             // Thêm mới inventory
             v1.MapPost("/product-store-inventory", async (IProductStoreInventoryService service, AddOrUpdateProductStoreInventoryDto dto) =>

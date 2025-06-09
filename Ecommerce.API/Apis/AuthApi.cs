@@ -207,8 +207,13 @@ namespace Ecommerce.API.Apis
         }
         private static string GetErrorRedirect(HttpContext context, string error)
         {
-            var redirectUri = context.GetRedirectUri();
-            return $"{redirectUri}?error={error}";
+            // Lấy redirect_uri từ query string của request hiện tại
+            var redirectUriFromQuery = context.Request.Query["redirect_uri"].FirstOrDefault();
+
+            // Sử dụng redirect_uri từ query nếu có, nếu không thì dùng DefaultFeLoginRedirectUri
+            var finalRedirectUri = string.IsNullOrEmpty(redirectUriFromQuery) ? DefaultFeLoginRedirectUri : redirectUriFromQuery;
+
+            return $"{finalRedirectUri}?error={error}";
         }
 
         private static string GetRedirectUri(this HttpContext context)
