@@ -11,7 +11,8 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapCategoryApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0)
+                                                                    .RequireAuthorization();
 
             v1.MapPost("/categorys", (ICategoryService categoryService, CreateCategoryDto category) => categoryService.AddCategory(category));
             v1.MapGet("/categorys/{categoryId:guid}", async (ICategoryService repo, Guid categoryId, [FromQuery] string? includeProperties = null) =>

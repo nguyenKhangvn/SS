@@ -13,8 +13,8 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapProductApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
-            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
+            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0).RequireAuthorization();
 
             v1.MapPost("/products", async (IProductService productService,
                                             [FromForm] ProductCreateDto productDto) =>

@@ -8,7 +8,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapCouponApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             // [POST] http://localhost:5000/api/v1/ecommerce/coupons
             v1.MapPost("/coupons", async (ICouponService couponService, CouponCreateDto coupon) =>

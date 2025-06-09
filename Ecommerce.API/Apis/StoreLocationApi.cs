@@ -8,7 +8,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapStoreLocationApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             v1.MapPost("/store-location", (IStoreLocationService storeLocationService, StoreLocationDto storeLocation) => storeLocationService.AddAsync(storeLocation));
             v1.MapGet("/store-location/{storeLocationId:guid}", async (IStoreLocationService service, Guid storeLocationId, [FromQuery] string? includeProperties = null) =>

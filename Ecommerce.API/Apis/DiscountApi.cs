@@ -7,7 +7,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapDiscountApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             v1.MapGet("/discount", async (IDiscountService service) =>
             {

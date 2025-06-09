@@ -8,7 +8,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapPostApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             v1.MapPost("/post", (IPostService postService, PostDto post) => postService.AddPostAsync(post));
             v1.MapGet("/post/{postId:guid}", async (IPostService service, Guid postId, [FromQuery] string? includeProperties = null) =>

@@ -8,7 +8,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapUserApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             // [POSt] http://localhost:5000/api/v1/ecommerce/users
             v1.MapPost("/users", (IUserService userService, UserCreateDto user) => userService.AddAsync(user));

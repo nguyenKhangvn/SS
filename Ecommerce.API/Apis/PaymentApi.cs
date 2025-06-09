@@ -10,7 +10,7 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapPaymentApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
 
             // Tạo URL thanh toán VNPay
             v1.MapPost("/payment/vnpay/", (

@@ -8,8 +8,8 @@ namespace Ecommerce.API.Apis
         public static IEndpointRouteBuilder MapOrderApi(this IEndpointRouteBuilder builder)
         {
             var vApi = builder.NewVersionedApi("ecommerce");
-            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0);
-            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0);
+            var v1 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(1, 0).RequireAuthorization();
+            var v2 = vApi.MapGroup("api/v{version:apiVersion}/ecommerce").HasApiVersion(2, 0).RequireAuthorization();
 
             v1.MapPost("/order", (IOrderService orderService, OrderDto order) => orderService.CreateAsync(order));
             v1.MapGet("/order/{orderId:guid}", async (IOrderService service, Guid orderId) =>
