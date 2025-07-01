@@ -11,5 +11,6 @@
         Task<Coupon?> GetByCodeAsync(string code);
         Task<UserCoupon> SaveCouponAsync(UserCoupon userCoupon);
         Task<IEnumerable<Coupon>> GetSavedCouponsAsync(Guid userId);
+        Task<UserCoupon> UseAndDeleteAsync(UserCoupon userCoupon);
     }
 }

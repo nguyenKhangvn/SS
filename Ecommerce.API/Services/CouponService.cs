@@ -165,9 +165,7 @@ namespace Ecommerce.API.Services
                     return false; // Không tìm thấy bản ghi để xóa
                 }
 
-                _context.UserCoupons.Remove(userCoupon);
-                await _context.SaveChangesAsync();
-
+                await _couponRepository.UseAndDeleteAsync(userCoupon);
                 return true;
             }
             catch (Exception)

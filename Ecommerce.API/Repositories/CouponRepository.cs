@@ -99,5 +99,18 @@
                 .Select(uc => uc.Coupon)
                 .ToListAsync();
         }
+
+        public async Task<UserCoupon> UseAndDeleteAsync(UserCoupon userCoupon)
+        {
+            var existingUserCoupon = await _context.UserCoupons
+                .FirstOrDefaultAsync(uc => uc.Id == userCoupon.Id && uc.UserId == userCoupon.UserId);
+            if (existingUserCoupon == null)
+            {
+                return null;
+            }
+            _context.UserCoupons.Remove(existingUserCoupon);
+            await _context.SaveChangesAsync();
+            return existingUserCoupon;
+        }
     }
 }
