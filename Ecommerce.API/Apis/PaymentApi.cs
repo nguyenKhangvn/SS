@@ -1,5 +1,6 @@
 ﻿using Ecommerce.API.Repositories;
 using Ecommerce.API.Repositories.Interfaces;
+using Ecommerce.Infrastructure.Entity;
 using Ecommerce.Infrastructure.ExternalServices.Payment.VnPay;
 using Ecommerce.Infrastructure.Models.Dtos;
 
@@ -32,16 +33,16 @@ namespace Ecommerce.API.Apis
                 var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
                 var response = vnPayService.ProcessPaymentResponse(context.Request.Query);
 
-                if (response?.VnPayResponseCode == "00")
+                if (response?.VnPayResponseCode == "00" && !string.IsNullOrEmpty(response.OrderCode))
                 {
-                    var order = await orderRepository.GetOrderByOrderCode(response?.OrderCode);
+                    var order = await orderRepository.GetOrderByOrderCode(response.OrderCode);
                     if (order != null)
                     {
                         var paymentDto = new PaymentDto
                         {
                             OrderId = order.Id,
                             OrderCode = order.OrderCode,
-                            Amount = order.TotalAmount,
+                            Amount = decimal.TryParse(response?.Amount, out var parsedAmount) ? parsedAmount/100 : 0,
                             PaymentMethod = response.PaymentMethod,
                             Status = PaymentStatus.COMPLETED,
                             TransactionId = response.TransactionId,
@@ -62,24 +63,24 @@ namespace Ecommerce.API.Apis
                 return payment == null ? Results.NotFound() : Results.Ok(payment);
             });
 
-            v1.MapGet("/payment/", async (IPaymentService paymentService) =>
+            v1.MapGet("/payment/user/{userId:guid}", async (IPaymentService paymentService, Guid userId) =>
             {
-                var payment = await paymentService.GetAllAsync();
+                var payment = await paymentService.GetAllAsync(userId);
                 return payment == null ? Results.NotFound() : Results.Ok(payment);
             });
 
-            v1.MapPost("/payment/{orderCode}", async (IPaymentService paymentService, IOrderService orderService, string orderCode) =>
+            v1.MapPost("/payment/", async (IPaymentService paymentService, IOrderService orderService, PaymentHistoryDto dto) =>
             {
-                var order = await orderService.GetOrderByOrderCode(orderCode);
+                var order = await orderService.GetOrderByOrderCode(dto.OrderCode);
                 if (order != null)
                 {
                     var paymentDto = new PaymentDto
                     {
                         OrderId = order.Id,
                         OrderCode = order.OrderCode,
-                        Amount = order.TotalAmount,
-                        PaymentMethod = "cod",
-                        Status = PaymentStatus.PENDING,
+                        Amount = dto.Amount,
+                        PaymentMethod = dto.PaymentMethod,
+                        Status = Enum.Parse<PaymentStatus>(dto.Status, true),
                         TransactionId = null,
                         PaidAt = DateTime.UtcNow
                     };

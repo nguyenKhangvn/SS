@@ -13,9 +13,9 @@ namespace Ecommerce.API.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PaymentDto>> GetAllAsync()
+        public async Task<IEnumerable<PaymentDto>> GetAllAsync(Guid userId)
         {
-            var payments = await _paymentRepository.GetAllAsync();
+            var payments = await _paymentRepository.GetAllAsync(userId);
             return _mapper.Map<IEnumerable<PaymentDto>>(payments);
         }
 

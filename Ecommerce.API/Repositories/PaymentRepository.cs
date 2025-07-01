@@ -2,7 +2,7 @@
 
 namespace Ecommerce.API.Repositories
 {
-    public class PaymentRepository: IPaymentRepository
+    public class PaymentRepository : IPaymentRepository
     {
         private readonly EcommerceDbContext _context;
 
@@ -11,14 +11,17 @@ namespace Ecommerce.API.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Payment>> GetAllAsync()
+        public async Task<IEnumerable<Payment>> GetAllAsync(Guid userId)
         {
-            return await _context.Payments.ToListAsync();
+            return await _context.Payments
+                .Include(o => o.Order)
+                .Where(o => o.Order != null && o.Order.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task<Payment?> GetByOrderIdAsync(Guid id)
         {
-            var payment = _context.Payments.FirstOrDefault(p => p.OrderId == id);
+            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == id); // Use async method
             return payment;
         }
 

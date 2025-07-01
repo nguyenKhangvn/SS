@@ -2,7 +2,7 @@
 {
     public interface IPaymentRepository
     {
-        Task<IEnumerable<Payment>> GetAllAsync();
+        Task<IEnumerable<Payment>> GetAllAsync(Guid userId);
         Task<Payment?> GetByIdAsync(Guid id);
         Task<Payment?> GetByOrderIdAsync(Guid id);
         Task<Payment> CreateAsync(Payment payment);

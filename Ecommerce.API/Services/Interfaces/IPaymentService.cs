@@ -4,7 +4,7 @@ namespace Ecommerce.API.Services.Interfaces
 {
     public interface IPaymentService
     {
-        Task<IEnumerable<PaymentDto>> GetAllAsync();
+        Task<IEnumerable<PaymentDto>> GetAllAsync(Guid userId);
         Task<PaymentDto?> GetByIdAsync(Guid id);
         Task<PaymentDto?> GetByOrderIdAsync(Guid orderId);
         Task<PaymentDto> CreateAsync(PaymentDto dto);

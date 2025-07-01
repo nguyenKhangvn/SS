@@ -56,6 +56,8 @@ namespace Ecommerce.Infrastructure.Mapping
 
             // payment
             CreateMap<PaymentDto, Payment>().ReverseMap();
+            CreateMap<PaymentHistoryDto, Payment>().ReverseMap();
+
 
             // review
             CreateMap<ReviewDto, Review>().ReverseMap();

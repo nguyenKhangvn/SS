@@ -36,15 +36,10 @@ namespace Ecommerce.Infrastructure.Models.Dtos
     public class PaymentHistoryDto
     {
         public Guid Id { get; set; }
-        public Guid PaymentId { get; set; }
-        public Guid UserId { get; set; }
         public string OrderCode { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
-        public string TransactionId { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public string ResponseCode { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTime PaidAt { get; set; }
     }
 }
