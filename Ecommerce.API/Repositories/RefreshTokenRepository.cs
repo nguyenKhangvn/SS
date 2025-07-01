@@ -75,8 +75,10 @@ namespace Ecommerce.API.Repositories
         public async Task<RefreshToken?> GetValidTokenAsync(string token, Guid userId)
         {
             return await _context.RefreshTokens
-                .Where(t => t.Token == token && t.UserId == userId && !t.IsRevoked && !t.IsExpired)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(r => r.Token == token &&
+                                          r.UserId == userId &&
+                                          r.Revoked == null && 
+                                          r.Expires > DateTime.UtcNow);
         }
     }
 }
