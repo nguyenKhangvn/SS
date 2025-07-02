@@ -50,6 +50,7 @@ namespace Ecommerce.API.Apis
                         };
                         await paymentService.CreateAsync(paymentDto);
                         order.Status = OrderStatus.PROCESSING;
+                        order.OrderCode = response.OrderCode;
                         await orderRepository.UpdateAsync(order);
                     }
                 }
@@ -69,15 +70,16 @@ namespace Ecommerce.API.Apis
                 return payment == null ? Results.NotFound() : Results.Ok(payment);
             });
 
-            v1.MapPost("/payment/", async (IPaymentService paymentService, IOrderService orderService, PaymentHistoryDto dto) =>
+            v1.MapPost("/payment/", async (HttpContext context, IPaymentService paymentService, PaymentHistoryDto dto) =>
             {
-                var order = await orderService.GetOrderByOrderCode(dto.OrderCode);
+                var orderRepository = context.RequestServices.GetRequiredService<IOrderRepository>();
+                var order = await orderRepository.GetOrderByOrderCode(dto.OrderCode);
                 if (order != null)
                 {
                     var paymentDto = new PaymentDto
                     {
                         OrderId = order.Id,
-                        OrderCode = order.OrderCode,
+                        OrderCode = dto.OrderCode,
                         Amount = dto.Amount,
                         PaymentMethod = dto.PaymentMethod,
                         Status = Enum.Parse<PaymentStatus>(dto.Status, true),
@@ -85,6 +87,8 @@ namespace Ecommerce.API.Apis
                         PaidAt = DateTime.UtcNow
                     };
                     await paymentService.CreateAsync(paymentDto);
+                    order.OrderCode = dto.OrderCode;
+                    await orderRepository.UpdateAsync(order);
                     return Results.Json(paymentDto);
                 }
                 return Results.NotFound();
